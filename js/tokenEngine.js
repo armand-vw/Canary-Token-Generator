@@ -12,6 +12,10 @@
  * which keeps it easy to reason about and unit-test.
  */
 
+import { generateQrSvg } from "./qrGenerator.js";
+
+/** @typedef {import("./store.js").CanaryToken} CanaryToken */
+
 /* ============================================================================
  * Token type registry (drives the "Generate" cards + configurator forms)
  * ========================================================================== */
@@ -26,6 +30,16 @@ export const TOKEN_TYPES = {
     icon: "crosshair",
     accent: "cyan",
     supportsCustomPayload: true
+  },
+  qr: {
+    id: "qr",
+    name: "QR Code Canary",
+    tagline: "Scan to trigger",
+    description:
+      "A scannable QR that resolves to your beacon. Print it, drop it in a slide or PDF, or leave it on a physical asset.",
+    icon: "qr-code",
+    accent: "rose",
+    supportsCustomPayload: false
   },
   pdf: {
     id: "pdf",
@@ -176,7 +190,12 @@ export function buildBeaconUrl(endpoint, token) {
   return url.toString();
 }
 
-/** Assemble the JSON body sent on POST delivery. */
+/**
+ * Assemble the JSON body sent on POST delivery.
+ * @param {CanaryToken} token
+ * @param {{ test?: boolean }} [options]
+ * @returns {Record<string, any>}
+ */
 export function buildPayload(token, { test = false } = {}) {
   let custom = {};
   if (token.customPayload && typeof token.customPayload === "object") {
@@ -283,6 +302,17 @@ export function buildSnippets(token) {
   };
 }
 
+/** Turn a label into a filesystem-safe slug (shared by PDF/QR/kit naming). */
+export function slugify(value) {
+  return (
+    String(value ?? "canary")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "canary"
+  );
+}
+
 /* ============================================================================
  * Token generation (dispatcher)
  * ========================================================================== */
@@ -295,14 +325,16 @@ export function buildSnippets(token) {
  * @param {string} config.label           Display label.
  * @param {string} [config.notes]
  * @param {string} config.endpoint        Webhook / listener URL.
- * @param {'GET'|'POST'} [config.mode]
+ * @param {string} [config.mode]          Preferred delivery mode ("GET" | "POST").
  * @param {string} [config.customPayload] Raw JSON string.
  * @param {Object} [config.meta]          Type-specific options.
- * @returns {CanaryToken}
+ * @returns {Promise<CanaryToken>}
  */
-export function generateToken(config) {
+export async function generateToken(config) {
   const id = generateCanaryId();
-  const mode = config.type === "web-bug" ? (config.mode ?? "GET") : (config.mode ?? "POST");
+  const fallbackMode = config.type === "web-bug" ? "GET" : "POST";
+  const mode = config.mode === "POST" || config.mode === "GET" ? config.mode : fallbackMode;
+  /** @type {CanaryToken} */
   const token = {
     id,
     type: config.type,
@@ -310,6 +342,7 @@ export function generateToken(config) {
     notes: config.notes?.trim() || "",
     endpoint: config.endpoint,
     mode,
+    beaconUrl: "",
     customPayload: parseCustomPayload(config.customPayload),
     meta: { ...(config.meta ?? {}) },
     createdAt: new Date().toISOString(),
@@ -322,6 +355,20 @@ export function generateToken(config) {
     case "web-bug":
       token.artifacts = buildWebBugArtifacts(token);
       break;
+    case "qr": {
+      const svg = await generateQrSvg(token.beaconUrl, { size: Number(token.meta.qrSize) || 512 });
+      token.artifacts = [
+        {
+          key: "qr",
+          label: "QR code (SVG)",
+          kind: "image",
+          value: svg,
+          filename: token.meta.filename?.trim() || `${slugify(token.label)}.svg`
+        },
+        { key: "beacon", label: "Tracking URL", value: token.beaconUrl, language: "text" }
+      ];
+      break;
+    }
     case "pdf":
       token.artifacts = [{ key: "beacon", label: "Tracking URL", value: token.beaconUrl, language: "text" }];
       break;
@@ -348,6 +395,10 @@ function parseCustomPayload(raw) {
   }
 }
 
+/**
+ * @param {CanaryToken} token
+ * @returns {import("./store.js").CanaryArtifact[]}
+ */
 function buildWebBugArtifacts(token) {
   const snippets = buildSnippets(token);
   return [
@@ -358,6 +409,10 @@ function buildWebBugArtifacts(token) {
   ];
 }
 
+/**
+ * @param {CanaryToken} token
+ * @returns {import("./store.js").CanaryArtifact[]}
+ */
 function buildCredentialArtifacts(token) {
   const credentialType = token.meta.credentialType ?? "aws";
 
@@ -384,6 +439,10 @@ function buildCredentialArtifacts(token) {
   ];
 }
 
+/**
+ * @param {CanaryToken} token
+ * @returns {import("./store.js").CanaryArtifact[]}
+ */
 function buildEnvArtifacts(token) {
   const preset = token.meta.envPreset ?? "dotenv";
   const { accessKeyId, secretAccessKey } = generateAwsKeyPair();

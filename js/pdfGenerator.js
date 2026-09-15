@@ -16,6 +16,8 @@
  * alert fires when a reader follows it. The in-app UI states this plainly.
  */
 
+import { slugify } from "./tokenEngine.js";
+
 const A4 = { width: 595.28, height: 841.89 };
 const MARGIN = 54;
 
@@ -294,19 +296,8 @@ export async function generatePdf(token) {
 
   const bytes = await doc.save();
   return {
-    blob: new Blob([bytes], { type: "application/pdf" }),
+    blob: new Blob([/** @type {any} */ (bytes)], { type: "application/pdf" }),
     filename: token.meta?.filename || `${slugify(token.label)}.pdf`,
     bytes: bytes.byteLength
   };
-}
-
-/** Turn a label into a filesystem-safe filename. */
-export function slugify(value) {
-  return (
-    String(value ?? "canary-document")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 60) || "canary-document"
-  );
 }

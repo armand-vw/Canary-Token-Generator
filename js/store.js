@@ -12,17 +12,29 @@
 const STORAGE_KEY = "ctg.tokens.v1";
 const listeners = new Set();
 
+/**
+ * A deployable artifact belonging to a token (snippet, decoy file or image).
+ * @typedef {Object} CanaryArtifact
+ * @property {string} key             Stable identifier within the token.
+ * @property {string} label           Display label.
+ * @property {string} value           Text content, file body or SVG markup.
+ * @property {'text'|'file'|'image'} [kind]
+ * @property {string} [filename]      Suggested download name for files/images.
+ * @property {string} [language]      Syntax hint for display.
+ */
+
 /** @typedef {Object} CanaryToken
- * @property {string} id            Unique canary id (also embedded in the beacon).
- * @property {string} type          Token type key, e.g. "web-bug" | "pdf".
- * @property {string} label         Human-friendly name.
- * @property {string} [notes]       Free-form notes.
- * @property {string} endpoint      Webhook / listener URL.
- * @property {'GET'|'POST'} mode    Delivery method.
- * @property {string} beaconUrl     Fully-formed tracking URL.
- * @property {string} createdAt     ISO timestamp.
- * @property {Object} [value]       Generated secret material / files (type-specific).
- * @property {Object} [meta]        Extra type-specific config (preset, filename…).
+ * @property {string} id              Unique canary id (also embedded in the beacon).
+ * @property {string} type            Token type key, e.g. "web-bug" | "pdf" | "qr".
+ * @property {string} label           Human-friendly name.
+ * @property {string} [notes]         Free-form notes.
+ * @property {string} endpoint        Webhook / listener URL.
+ * @property {'GET'|'POST'} mode      Delivery method.
+ * @property {string} beaconUrl       Fully-formed tracking URL.
+ * @property {Object|null} [customPayload] JSON merged into POST beacons.
+ * @property {Object} [meta]          Extra type-specific config (preset, filename…).
+ * @property {string} createdAt       ISO timestamp.
+ * @property {CanaryArtifact[]} [artifacts] Generated deployment material.
  */
 
 function notify() {
@@ -135,7 +147,7 @@ export function importPayload(jsonText) {
     added += 1;
   }
 
-  merged.sort((a, b) => new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0));
+  merged.sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime());
   writeAll(merged);
   return { added, duplicates, skipped };
 }

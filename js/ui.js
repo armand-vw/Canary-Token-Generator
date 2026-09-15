@@ -31,18 +31,29 @@ export function escapeHtml(value) {
  * to empty inline placeholders rather than throwing.
  */
 export function refreshIcons() {
-  if (typeof window.lucide?.createIcons !== "function") return;
+  const lucide = /** @type {any} */ (window).lucide;
+  if (typeof lucide?.createIcons !== "function") return;
   try {
-    window.lucide.createIcons({ attrs: { "stroke-width": 2 } });
+    lucide.createIcons({ attrs: { "stroke-width": 2 } });
   } catch {
     /* Icon hydration is non-critical; never let it break a render. */
   }
 }
 
-/** Shorthand for querySelector. */
+/**
+ * Shorthand for querySelector.
+ * @param {string} selector
+ * @param {ParentNode} [scope]
+ * @returns {any}
+ */
 export const $ = (selector, scope = document) => scope.querySelector(selector);
 
-/** Shorthand for querySelectorAll returning a real array. */
+/**
+ * Shorthand for querySelectorAll returning a real array.
+ * @param {string} selector
+ * @param {ParentNode} [scope]
+ * @returns {any[]}
+ */
 export const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
 /* ============================================================================

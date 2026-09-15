@@ -17,6 +17,7 @@ import {
   badgeClassFor
 } from "./tokenEngine.js";
 import { generatePdf } from "./pdfGenerator.js";
+import { buildDeploymentKit, deploymentKitFilename } from "./kitBuilder.js";
 import { renderDocs } from "./templates.js";
 import {
   $,
@@ -55,7 +56,8 @@ const ACCENTS = {
   cyan: { chip: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300", ring: "hover:border-cyan-400/60" },
   violet: { chip: "border-violet-500/30 bg-violet-500/10 text-violet-300", ring: "hover:border-violet-400/60" },
   amber: { chip: "border-amber-500/30 bg-amber-500/10 text-amber-300", ring: "hover:border-amber-400/60" },
-  emerald: { chip: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", ring: "hover:border-emerald-400/60" }
+  emerald: { chip: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", ring: "hover:border-emerald-400/60" },
+  rose: { chip: "border-rose-500/30 bg-rose-500/10 text-rose-300", ring: "hover:border-rose-400/60" }
 };
 
 const state = {
@@ -228,6 +230,26 @@ function configuratorForm(type) {
 }
 
 function typeSpecificFields(type) {
+  if (type === "qr") {
+    return `
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="field-label" for="field-qr-size">QR size</label>
+          <select class="input" id="field-qr-size" name="qrSize">
+            <option value="256">Small — 256 px</option>
+            <option value="512" selected>Medium — 512 px</option>
+            <option value="1024">Large — 1024 px</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" for="field-qr-filename">Filename (optional)</label>
+          <input class="input" id="field-qr-filename" name="qrFilename" type="text"
+            placeholder="canary-qr.svg" autocomplete="off" />
+        </div>
+      </div>
+      <p class="field-hint">The QR encodes your tracking URL, so scanning it fires the beacon.</p>`;
+  }
+
   if (type === "pdf") {
     return `
       <div class="grid gap-4 sm:grid-cols-2">
@@ -337,7 +359,7 @@ function collectFormValue(form, name) {
   return field ? String(field.value ?? "").trim() : "";
 }
 
-function handleGenerate(type, form) {
+async function handleGenerate(type, form) {
   const errors = [];
   const label = collectFormValue(form, "label");
   const endpoint = collectFormValue(form, "endpoint");
@@ -369,6 +391,9 @@ function handleGenerate(type, form) {
     meta.preset = collectFormValue(form, "pdfPreset") || "invoice";
     meta.title = collectFormValue(form, "pdfTitle");
     meta.filename = collectFormValue(form, "pdfFilename");
+  } else if (type === "qr") {
+    meta.qrSize = Number(collectFormValue(form, "qrSize")) || 512;
+    meta.filename = collectFormValue(form, "qrFilename");
   } else if (type === "credentials") {
     meta.credentialType = collectFormValue(form, "credentialType") || "aws";
     meta.issuer = collectFormValue(form, "jwtIssuer");
@@ -380,12 +405,25 @@ function handleGenerate(type, form) {
     meta.channel = collectFormValue(form, "channel");
   }
 
+  const submitButton = form.querySelector("button[type='submit']");
+  const submitLabel = submitButton?.innerHTML;
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.innerHTML = `<i data-lucide="loader-2" class="h-4 w-4 spinner"></i> Generating…`;
+    refreshIcons();
+  }
+
   let token;
   try {
-    token = generateToken({ type, label, endpoint, mode, notes, customPayload, meta });
+    token = await generateToken({ type, label, endpoint, mode, notes, customPayload, meta });
   } catch (error) {
     console.error("[app] Token generation failed", error);
     toast("Something went wrong generating that token.", { type: "error" });
+    if (submitButton) {
+      submitButton.disabled = false;
+      if (submitLabel) submitButton.innerHTML = submitLabel;
+      refreshIcons();
+    }
     return;
   }
 
@@ -472,6 +510,21 @@ function renderResult(token) {
 }
 
 function artifactMarkup(artifact, index) {
+  if (artifact.kind === "image") {
+    return `
+      <div>
+        <div class="mb-1.5 flex items-center justify-between gap-2">
+          <label class="field-label mb-0">${escapeHtml(artifact.label)}</label>
+          <button type="button" class="btn-secondary px-2 py-1 text-xs" data-download-image="${index}">
+            <i data-lucide="download" class="h-3.5 w-3.5"></i> Download SVG
+          </button>
+        </div>
+        <div class="flex justify-center rounded-xl border border-slate-800 bg-white p-4">
+          <div class="qr-preview h-48 w-48">${artifact.value}</div>
+        </div>
+      </div>`;
+  }
+
   return `
     <div>
       <div class="mb-1.5 flex items-center justify-between gap-2">
@@ -504,6 +557,8 @@ function deployHint(type) {
   switch (type) {
     case "web-bug":
       return "Paste the HTML/Markdown snippet into an email signature, CMS draft, wiki page or document. The pixel is invisible.";
+    case "qr":
+      return "Print the QR and attach it to a physical asset, add it to a slide, or embed it in a document. Any scan fires the beacon.";
     case "pdf":
       return "Place the PDF in a shared drive, attachment folder or repo where an intruder would look. Rename it to something tempting.";
     case "credentials":
@@ -535,9 +590,21 @@ function bindResultActions(token) {
     button.addEventListener("click", () => {
       const artifact = token.artifacts[Number(button.dataset.downloadFile)];
       if (!artifact) return;
-      const mime = artifact.language === "ini" ? "text/plain" : "text/plain";
-      downloadBlob(new Blob([artifact.value], { type: `${mime};charset=utf-8` }), artifact.filename || "canary.txt");
+      downloadBlob(new Blob([artifact.value], { type: "text/plain;charset=utf-8" }), artifact.filename || "canary.txt");
       toast(`Downloaded ${artifact.filename || "file"}`, { type: "success" });
+    });
+  });
+
+  // Downloadable SVG images (QR canaries).
+  $$("[data-download-image]", $("#drawer-body")).forEach((button) => {
+    button.addEventListener("click", () => {
+      const artifact = token.artifacts[Number(button.dataset.downloadImage)];
+      if (!artifact) return;
+      downloadBlob(
+        new Blob([artifact.value], { type: "image/svg+xml;charset=utf-8" }),
+        artifact.filename || "canary-qr.svg"
+      );
+      toast(`Downloaded ${artifact.filename || "QR code"}`, { type: "success" });
     });
   });
 
@@ -756,6 +823,50 @@ function updateTokenCount(tokens) {
  * Export / import / clear
  * ========================================================================== */
 
+async function handleBuildKit() {
+  const tokens = store.readAll();
+  if (!tokens.length) {
+    toast("Generate at least one token before building a kit.", { type: "warning" });
+    return;
+  }
+
+  const hasPdf = tokens.some((token) => token.type === "pdf");
+  const confirmed = await confirmDialog({
+    title: "Build deployment kit?",
+    message: `Packages ${tokens.length} token(s) into a ZIP with snippets, decoy files${
+      hasPdf ? ", generated PDFs" : ""
+    } and a deployment guide.${hasPdf ? " Generating PDFs may take a moment." : ""}`,
+    confirmText: "Build kit"
+  });
+  if (!confirmed) return;
+
+  const button = $("#build-kit");
+  const original = button?.innerHTML;
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = `<i data-lucide="loader-2" class="h-4 w-4 spinner"></i> Zipping…`;
+    refreshIcons();
+  }
+
+  try {
+    const result = await buildDeploymentKit(tokens, store.exportPayload(), { includePdfs: true });
+    downloadBlob(result.blob, deploymentKitFilename());
+    toast(`Deployment kit ready — ${result.fileCount} files (${formatBytes(result.bytes)}).`, {
+      type: result.warnings.length ? "warning" : "success",
+      title: result.warnings.length ? result.warnings[0] : undefined
+    });
+  } catch (error) {
+    console.error("[app] Deployment kit build failed", error);
+    toast("Could not build the deployment kit.", { type: "error" });
+  } finally {
+    if (button) {
+      button.disabled = false;
+      if (original) button.innerHTML = original;
+      refreshIcons();
+    }
+  }
+}
+
 function handleExport() {
   const payload = store.exportPayload();
   if (!payload.count) {
@@ -879,6 +990,7 @@ function init() {
     renderDashboard();
   });
   $("#export-tokens")?.addEventListener("click", handleExport);
+  $("#build-kit")?.addEventListener("click", handleBuildKit);
   $("#import-tokens")?.addEventListener("change", handleImport);
   $("#clear-tokens")?.addEventListener("click", handleClear);
 

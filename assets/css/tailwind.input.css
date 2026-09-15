@@ -288,6 +288,18 @@
     color: #fda4af;
   }
 
+  /* ----------------------------- QR preview ----------------------------- */
+  .qr-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qr-preview svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
   /* ----------------------------- Docs prose ----------------------------- */
   .docs-prose {
     font-size: 0.9375rem;

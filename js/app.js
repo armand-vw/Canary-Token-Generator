@@ -1013,6 +1013,20 @@ function init() {
 
   // Redraw icons once the Lucide UMD bundle has definitely executed.
   window.addEventListener("load", refreshIcons);
+  registerServiceWorker();
+}
+
+/**
+ * Register the service worker so the app is installable and works offline.
+ * Failures are non-fatal (e.g. unsupported browser, file:// preview).
+ */
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((error) => {
+      console.info("[app] Service worker registration skipped:", error?.message ?? error);
+    });
+  });
 }
 
 if (document.readyState === "loading") {

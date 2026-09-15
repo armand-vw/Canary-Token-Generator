@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateQrSvg, svgToDataUrl } from "../js/qrGenerator.js";
+import { generateQrSvg, svgToDataUrl } from "../docs/js/qrGenerator.js";
 
 describe("generateQrSvg", () => {
   it("renders an SVG QR code for a tracking URL", async () => {

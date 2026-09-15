@@ -10,7 +10,7 @@ import {
   importPayload,
   summarize,
   subscribe
-} from "../js/store.js";
+} from "../docs/js/store.js";
 
 const KEY = "ctg.tokens.v1";
 

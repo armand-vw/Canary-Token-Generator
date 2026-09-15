@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { PDFDocument, PDFName } from "pdf-lib";
-import { generatePdf } from "../js/pdfGenerator.js";
+import { generatePdf } from "../docs/js/pdfGenerator.js";
 
 /** @returns {any} */
 function pdfToken(overrides = {}) {

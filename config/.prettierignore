@@ -1,0 +1,7 @@
+node_modules
+coverage
+package-lock.json
+docs/assets/css/styles.css
+docs/assets/img
+LICENSE
+docs/.nojekyll

@@ -3,11 +3,11 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["node_modules/**", "coverage/**", "assets/css/styles.css", "assets/img/**", "package-lock.json"]
+    ignores: ["node_modules/**", "coverage/**", "docs/assets/css/styles.css", "docs/assets/img/**", "package-lock.json"]
   },
   js.configs.recommended,
   {
-    files: ["js/**/*.js"],
+    files: ["docs/js/**/*.js"],
     languageOptions: {
       ecmaVersion: 2023,
       sourceType: "module",
@@ -23,7 +23,7 @@ export default [
     }
   },
   {
-    files: ["sw.js"],
+    files: ["docs/sw.js"],
     languageOptions: {
       ecmaVersion: 2023,
       sourceType: "script",

@@ -17,7 +17,7 @@ cd Canary-Token-Generator
 npm ci
 ```
 
-Serve the folder over HTTP (ES modules and the service worker require it):
+Serve the repository over HTTP (ES modules and the service worker require it):
 
 ```bash
 python3 -m http.server 8080
@@ -25,7 +25,7 @@ python3 -m http.server 8080
 npx serve .
 ```
 
-Then open <http://localhost:8080>.
+Then open <http://localhost:8080/docs/>.
 
 ## Scripts
 
@@ -44,29 +44,31 @@ Then open <http://localhost:8080>.
 ## Project layout
 
 ```
-index.html                     Layout, import map, Tailwind link, drawer/toast mounts
-assets/css/tailwind.input.css  Tailwind source (compiled to styles.css)
-assets/css/styles.css          Committed compiled output — do not edit by hand
-assets/img/                    Logo, icons and social preview
-js/app.js                      Entry point: routing, configurator, dashboard
-js/tokenEngine.js              Canary ids, decoy factories, beacon delivery
-js/qrGenerator.js              QR SVG rendering
-js/pdfGenerator.js             PDF construction (pdf-lib)
-js/kitBuilder.js               Deployment-kit ZIP assembly (fflate)
-js/store.js                    localStorage persistence
-js/ui.js                       Toasts, drawer, clipboard, formatting
-js/templates.js                In-app documentation content
-tests/                         Vitest suites
-config/                        Tooling config (eslint, tailwind, tsconfig, vitest)
-.github/                       CI, issue/PR templates and project docs
+docs/index.html                     Layout, import map, Tailwind link, drawer/toast mounts
+docs/assets/css/tailwind.input.css  Tailwind source (compiled to styles.css)
+docs/assets/css/styles.css          Committed compiled output — do not edit by hand
+docs/assets/img/                    Logo, icons and social preview
+docs/js/app.js                      Entry point: routing, configurator, dashboard
+docs/js/tokenEngine.js              Canary ids, decoy factories, beacon delivery
+docs/js/qrGenerator.js              QR SVG rendering
+docs/js/pdfGenerator.js             PDF construction (pdf-lib)
+docs/js/kitBuilder.js               Deployment-kit ZIP assembly (fflate)
+docs/js/store.js                    localStorage persistence
+docs/js/ui.js                       Toasts, drawer, clipboard, formatting
+docs/js/templates.js                In-app documentation content
+tests/                              Vitest suites
+config/                             Tooling config (eslint, tailwind, tsconfig, vitest)
+.github/                            CI, issue/PR templates and project docs
 ```
+
+The deployable site is the `docs/` folder — GitHub Pages publishes it directly.
 
 ## Architecture notes
 
 - **No build step is required to run or deploy.** The only generated artifact is
-  `assets/css/styles.css`, which is committed. If you change Tailwind classes, run
+  `docs/assets/css/styles.css`, which is committed. If you change Tailwind classes, run
   `npm run build:css` and commit the result — CI checks that it is up to date.
-- **Dependencies are pinned in `index.html`'s import map.** The same bare specifiers
+- **Dependencies are pinned in `docs/index.html`'s import map.** The same bare specifiers
   (`pdf-lib`, `qrcode`, `fflate`) resolve from the CDN in the browser and from `node_modules`
   under test. Keep the import-map versions and `package.json` versions in sync.
 - **JSDoc is the type layer.** Add or update `@param`/`@returns`/`@typedef` annotations when you

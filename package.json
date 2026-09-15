@@ -22,13 +22,13 @@
     "node": ">=20"
   },
   "scripts": {
-    "build:css": "tailwindcss -i ./assets/css/tailwind.input.css -o ./assets/css/styles.css --minify --config ./config/tailwind.config.js",
-    "watch:css": "tailwindcss -i ./assets/css/tailwind.input.css -o ./assets/css/styles.css --watch --config ./config/tailwind.config.js",
+    "build:css": "tailwindcss -i ./docs/assets/css/tailwind.input.css -o ./docs/assets/css/styles.css --minify --config ./config/tailwind.config.js",
+    "watch:css": "tailwindcss -i ./docs/assets/css/tailwind.input.css -o ./docs/assets/css/styles.css --watch --config ./config/tailwind.config.js",
     "test": "vitest run --config ./config/vitest.config.js",
     "test:watch": "vitest --config ./config/vitest.config.js",
     "lint": "eslint . --config ./config/eslint.config.js",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write . --ignore-path ./config/.prettierignore",
+    "format:check": "prettier --check . --ignore-path ./config/.prettierignore",
     "typecheck": "tsc -p ./config/tsconfig.json",
     "verify": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run build:css"
   },
@@ -46,5 +46,22 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "tabWidth": 2,
+    "singleQuote": false,
+    "semi": true,
+    "trailingComma": "none",
+    "arrowParens": "always",
+    "endOfLine": "lf",
+    "overrides": [
+      {
+        "files": "*.md",
+        "options": {
+          "proseWrap": "preserve"
+        }
+      }
+    ]
   }
 }

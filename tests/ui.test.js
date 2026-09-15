@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { escapeHtml, validateUrl, isValidJson, formatBytes, formatDate, truncate } from "../js/ui.js";
+import { escapeHtml, validateUrl, isValidJson, formatBytes, formatDate, truncate } from "../docs/js/ui.js";
 
 describe("escapeHtml", () => {
   it("neutralises HTML-significant characters", () => {

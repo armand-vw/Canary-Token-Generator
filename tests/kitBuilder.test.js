@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { unzipSync, strFromU8 } from "fflate";
-import { buildDeploymentKit, buildGuide, deploymentKitFilename } from "../js/kitBuilder.js";
-import { generateToken } from "../js/tokenEngine.js";
+import { buildDeploymentKit, buildGuide, deploymentKitFilename } from "../docs/js/kitBuilder.js";
+import { generateToken } from "../docs/js/tokenEngine.js";
 
 const ENDPOINT = "https://webhook.site/abc";
 

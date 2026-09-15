@@ -15,6 +15,6 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node"]
   },
-  "include": ["../js/**/*.js", "../tests/**/*.js", "./*.config.js"],
+  "include": ["../docs/js/**/*.js", "../tests/**/*.js", "./*.config.js"],
   "exclude": ["../node_modules", "../coverage"]
 }

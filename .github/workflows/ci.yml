@@ -41,9 +41,9 @@ jobs:
       - name: Verify compiled CSS is committed and up to date
         run: |
           npm run build:css
-          if ! git diff --quiet -- assets/css/styles.css; then
-            echo "::error::assets/css/styles.css is out of date. Run 'npm run build:css' and commit the result."
-            git --no-pager diff -- assets/css/styles.css | head -60
+          if ! git diff --quiet -- docs/assets/css/styles.css; then
+            echo "::error::docs/assets/css/styles.css is out of date. Run 'npm run build:css' and commit the result."
+            git --no-pager diff -- docs/assets/css/styles.css | head -60
             exit 1
           fi
           echo "Compiled CSS is up to date."

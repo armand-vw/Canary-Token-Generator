@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/img/banner.svg" alt="Canary Token Generator — client-side decoy tokens for breach and intrusion detection" width="100%" />
+<img src="docs/assets/img/banner.svg" alt="Canary Token Generator — client-side decoy tokens for breach and intrusion detection" width="100%" />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22d3ee.svg)](./LICENSE)
 [![CI](https://github.com/armand-vw/Canary-Token-Generator/actions/workflows/ci.yml/badge.svg)](https://github.com/armand-vw/Canary-Token-Generator/actions/workflows/ci.yml)
@@ -48,24 +48,26 @@ browser's `localStorage` and alerts are delivered straight to a webhook you cont
 ## Architecture
 
 ```
-index.html                 Layout, import map, Tailwind link, drawer + toast mounts
-manifest.webmanifest       PWA manifest
-sw.js                      Service worker (offline app shell)
-assets/css/tailwind.input.css  Tailwind source (compiled -> styles.css)
-assets/css/styles.css      Compiled stylesheet (committed)
-assets/img/                Logo, icons and social preview
-js/app.js                  Entry point: hash routing, configurator flow, dashboard rendering
-js/tokenEngine.js          Canary id minting, decoy factories, beacon delivery, snippets
-js/qrGenerator.js          QR-code SVG rendering
-js/pdfGenerator.js         Lazy-loaded pdf-lib PDF builder + link annotation
-js/kitBuilder.js           Deployment-kit ZIP assembly (fflate)
-js/store.js                Versioned localStorage persistence with subscribe/export/import
-js/ui.js                   Toasts, drawer, confirm dialog, clipboard, downloads, formatting
-js/templates.js            In-app documentation content
-tests/                     Vitest suites
-config/                    Tooling config (eslint, tailwind, tsconfig, vitest)
-.github/                   CI, issue/PR templates and project docs
+docs/index.html                 Layout, import map, Tailwind link, drawer + toast mounts
+docs/manifest.webmanifest       PWA manifest
+docs/sw.js                      Service worker (offline app shell)
+docs/assets/css/tailwind.input.css  Tailwind source (compiled -> styles.css)
+docs/assets/css/styles.css      Compiled stylesheet (committed)
+docs/assets/img/                Logo, icons and social preview
+docs/js/app.js                  Entry point: hash routing, configurator flow, dashboard rendering
+docs/js/tokenEngine.js          Canary id minting, decoy factories, beacon delivery, snippets
+docs/js/qrGenerator.js          QR-code SVG rendering
+docs/js/pdfGenerator.js         Lazy-loaded pdf-lib PDF builder + link annotation
+docs/js/kitBuilder.js           Deployment-kit ZIP assembly (fflate)
+docs/js/store.js                Versioned localStorage persistence with subscribe/export/import
+docs/js/ui.js                   Toasts, drawer, confirm dialog, clipboard, downloads, formatting
+docs/js/templates.js            In-app documentation content
+tests/                          Vitest suites
+config/                         Tooling config (eslint, tailwind, tsconfig, vitest)
+.github/                        CI, issue/PR templates and project docs
 ```
+
+The deployable site lives in `docs/`; GitHub Pages is configured to publish that folder.
 
 - **No build step required to run or deploy.** Native ES modules load directly in the browser and
   the compiled CSS is committed. Tooling (`npm run build:css`, tests, lint) exists only for
@@ -161,10 +163,10 @@ See [CONTRIBUTING.md](./.github/CONTRIBUTING.md) for the full script list and pr
 
 1. Push this repository to GitHub.
 2. Go to **Settings → Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/ (root)`.
+3. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/docs`.
 4. Save — the site publishes at `https://<username>.github.io/<repo>/`.
 
-The included `.nojekyll` file ensures GitHub serves the files exactly as-is. No build step or
+The included `docs/.nojekyll` file ensures GitHub serves the files exactly as-is. No build step or
 Action is needed — the compiled stylesheet is committed, and CI verifies it stays in sync.
 
 ## Project status

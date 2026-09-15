@@ -13,7 +13,7 @@ import {
   generateToken,
   slugify,
   badgeClassFor
-} from "../js/tokenEngine.js";
+} from "../docs/js/tokenEngine.js";
 
 const ENDPOINT = "https://webhook.site/11111111-2222-3333-4444-555555555555";
 
@@ -69,7 +69,7 @@ describe("credential factories", () => {
 });
 
 describe("beacon construction", () => {
-  /** @type {import("../js/store.js").CanaryToken} */
+  /** @type {import("../docs/js/store.js").CanaryToken} */
   const token = {
     id: "ct_beacon",
     label: "My Canary",

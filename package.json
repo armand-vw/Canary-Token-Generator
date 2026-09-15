@@ -18,6 +18,9 @@
     "blue-team",
     "github-pages"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build:css": "tailwindcss -i ./assets/css/tailwind.input.css -o ./assets/css/styles.css --minify",
     "watch:css": "tailwindcss -i ./assets/css/tailwind.input.css -o ./assets/css/styles.css --watch",

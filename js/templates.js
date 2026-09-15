@@ -43,6 +43,12 @@ export const DOCS_SECTIONS = [
         A unique URL embedded as a 1×1 image, Markdown pixel or cURL call. Ideal for email signatures, shared docs,
         wiki pages and CMS drafts. Any fetch of the URL fires the beacon.
       </p>
+      <h3>QR Code Canary</h3>
+      <p>
+        The same tracking link rendered as a scannable QR code. Print it and attach it to a physical asset, place it in
+        a slide deck, or embed it in a document. Use the <strong>Download SVG</strong> button for print-quality
+        output at any size.
+      </p>
       <h3>Decoy PDF Document</h3>
       <p>
         A realistic document (invoice, CV, handbook or memo) generated in-browser with an embedded link to your
@@ -65,6 +71,21 @@ export const DOCS_SECTIONS = [
         A downloadable secrets file that mixes plausible values with a hidden tracking endpoint
         (<code>INTERNAL_WEBHOOK_URL</code>, <code>endpoint_url</code>, SSH <code>RemoteCommand</code>). If someone
         copies the file and a tool homes the endpoint, the alarm fires.
+      </p>
+      <h2>Managing your tokens</h2>
+      <p>
+        Every token is recorded under <strong>My Active Tokens</strong>, stored only in this browser. From there you
+        can search, copy a tracking URL, delete a token, or export/import the register as JSON for backup.
+      </p>
+      <p>
+        <strong>Deployment Kit</strong> packages the whole register — plus snippets, decoy files, QR SVGs and
+        generated PDFs — into a single ZIP with a deployment guide, so you can hand a kit to a teammate or keep an
+        offline record.
+      </p>
+      <p>
+        The app is an installable PWA: use your browser's <em>Install</em> action to add it to your desktop or home
+        screen. The interface works offline; the QR, PDF and ZIP generators need a connection the first time they load
+        their libraries.
       </p>
     `
   },

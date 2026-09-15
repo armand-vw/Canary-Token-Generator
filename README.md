@@ -10,7 +10,7 @@
 **A sleek, dependency-light security utility for generating and deploying canary tokens —
 web bugs, decoy PDFs, QR codes, fake credentials and `.env` bait — to detect unauthorized access.**
 
-[**Live Demo**](https://armand-vw.github.io/Canary-Token-Generator/) · [How it works](#how-it-works) · [Webhook setup](#choosing-a-webhook-endpoint) · [Contributing](./CONTRIBUTING.md) · [Security](#-security--ethics)
+[**Live Demo**](https://armand-vw.github.io/Canary-Token-Generator/) · [How it works](#how-it-works) · [Webhook setup](#choosing-a-webhook-endpoint) · [Contributing](./.github/CONTRIBUTING.md) · [Security](#-security--ethics)
 
 </div>
 
@@ -63,6 +63,8 @@ js/store.js                Versioned localStorage persistence with subscribe/exp
 js/ui.js                   Toasts, drawer, confirm dialog, clipboard, downloads, formatting
 js/templates.js            In-app documentation content
 tests/                     Vitest suites
+config/                    Tooling config (eslint, tailwind, tsconfig, vitest)
+.github/                   CI, issue/PR templates and project docs
 ```
 
 - **No build step required to run or deploy.** Native ES modules load directly in the browser and
@@ -153,7 +155,7 @@ Then open <http://localhost:8080>. If you change Tailwind classes, rebuild the c
 npm run build:css
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full script list and project conventions.
+See [CONTRIBUTING.md](./.github/CONTRIBUTING.md) for the full script list and project conventions.
 
 ## Deploying to GitHub Pages
 
@@ -167,8 +169,8 @@ Action is needed — the compiled stylesheet is committed, and CI verifies it st
 
 ## Project status
 
-See [CHANGELOG.md](./CHANGELOG.md) for release history. Contributions are welcome —
-read [CONTRIBUTING.md](./CONTRIBUTING.md) and the [Code of Conduct](./CODE_OF_CONDUCT.md) first.
+See [CHANGELOG.md](./.github/CHANGELOG.md) for release history. Contributions are welcome —
+read [CONTRIBUTING.md](./.github/CONTRIBUTING.md) and the [Code of Conduct](./.github/CODE_OF_CONDUCT.md) first.
 
 ## ⚠️ Security & ethics
 
@@ -182,7 +184,7 @@ read [CONTRIBUTING.md](./CONTRIBUTING.md) and the [Code of Conduct](./CODE_OF_CO
 - **Your data stays local.** Tokens live in `localStorage`; clearing site data removes them.
   Export your register to JSON if you want a backup.
 
-To report a vulnerability, see [SECURITY.md](./SECURITY.md).
+To report a vulnerability, see [SECURITY.md](./.github/SECURITY.md).
 
 ## License
 

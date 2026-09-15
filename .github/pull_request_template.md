@@ -26,6 +26,6 @@
 
 ## Checklist
 
-- [ ] I have read [CONTRIBUTING.md](../CONTRIBUTING.md)
+- [ ] I have read [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [ ] Changes are limited to the scope described above
 - [ ] No secrets, tokens or real webhook URLs are included

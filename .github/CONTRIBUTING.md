@@ -38,25 +38,27 @@ Then open <http://localhost:8080>.
 | `npm run lint`         | ESLint (flat config)                                      |
 | `npm run format`       | Format with Prettier                                      |
 | `npm run format:check` | Verify formatting without writing                         |
-| `npm run typecheck`    | Type-check JSDoc via `tsc --noEmit`                       |
+| `npm run typecheck`    | Type-check JSDoc via `tsc -p ./config/tsconfig.json`      |
 | `npm run verify`       | Lint + format check + typecheck + tests + CSS build       |
 
 ## Project layout
 
 ```
-index.html               Layout, import map, Tailwind link, drawer/toast mounts
-assets/css/tailwind.input.css   Tailwind source (compiled to styles.css)
-assets/css/styles.css    Committed compiled output — do not edit by hand
-assets/img/              Logo, icons and social preview
-js/app.js                Entry point: routing, configurator, dashboard
-js/tokenEngine.js        Canary ids, decoy factories, beacon delivery
-js/qrGenerator.js        QR SVG rendering
-js/pdfGenerator.js       PDF construction (pdf-lib)
-js/kitBuilder.js         Deployment-kit ZIP assembly (fflate)
-js/store.js              localStorage persistence
-js/ui.js                 Toasts, drawer, clipboard, formatting
-js/templates.js          In-app documentation content
-tests/                   Vitest suites
+index.html                     Layout, import map, Tailwind link, drawer/toast mounts
+assets/css/tailwind.input.css  Tailwind source (compiled to styles.css)
+assets/css/styles.css          Committed compiled output — do not edit by hand
+assets/img/                    Logo, icons and social preview
+js/app.js                      Entry point: routing, configurator, dashboard
+js/tokenEngine.js              Canary ids, decoy factories, beacon delivery
+js/qrGenerator.js              QR SVG rendering
+js/pdfGenerator.js             PDF construction (pdf-lib)
+js/kitBuilder.js               Deployment-kit ZIP assembly (fflate)
+js/store.js                    localStorage persistence
+js/ui.js                       Toasts, drawer, clipboard, formatting
+js/templates.js                In-app documentation content
+tests/                         Vitest suites
+config/                        Tooling config (eslint, tailwind, tsconfig, vitest)
+.github/                       CI, issue/PR templates and project docs
 ```
 
 ## Architecture notes

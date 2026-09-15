@@ -189,7 +189,5 @@ export const DOCS_SECTIONS = [
 
 /** Render the full Docs view as an HTML string. */
 export function renderDocs() {
-  return DOCS_SECTIONS.map((section) => `<section id="${section.id}">${section.html}</section>`).join(
-    `<hr />`
-  );
+  return DOCS_SECTIONS.map((section) => `<section id="${section.id}">${section.html}</section>`).join(`<hr />`);
 }

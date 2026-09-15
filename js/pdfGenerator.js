@@ -2,8 +2,12 @@
  * pdfGenerator.js — client-side decoy PDF construction
  * ----------------------------------------------------------------------------
  * Builds realistic PDF documents with pdf-lib and embeds a link annotation
- * pointing at the canary beacon. pdf-lib is lazy-loaded from esm.sh the first
- * time a PDF is requested, so the rest of the app never pays for its ~1 MB.
+ * pointing at the canary beacon. pdf-lib is lazy-loaded the first time a PDF is
+ * requested, so the rest of the app never pays for its ~1 MB.
+ *
+ * The bare "pdf-lib" specifier is resolved by the browser via the import map in
+ * index.html and by Node/Vitest via node_modules, so this same module is
+ * testable without a bundler.
  *
  * IMPORTANT / HONEST LIMITATION
  * Modern PDF viewers do not auto-fetch remote assets embedded in documents
@@ -12,17 +16,16 @@
  * alert fires when a reader follows it. The in-app UI states this plainly.
  */
 
-const PDF_LIB_URL = "https://esm.sh/pdf-lib@1.17.1";
-
 const A4 = { width: 595.28, height: 841.89 };
 const MARGIN = 54;
 
+/** @type {Promise<typeof import("pdf-lib")> | null} */
 let pdfLibPromise = null;
 
 /** Lazily import pdf-lib once and cache the module promise. */
 function loadPdfLib() {
   if (!pdfLibPromise) {
-    pdfLibPromise = import(/* @vite-ignore */ PDF_LIB_URL).catch((error) => {
+    pdfLibPromise = import("pdf-lib").catch((error) => {
       pdfLibPromise = null; // allow a retry on the next attempt
       throw error;
     });

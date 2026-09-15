@@ -404,11 +404,8 @@ function handleGenerate(type, form) {
 
 function renderResult(token) {
   const type = TOKEN_TYPES[token.type];
-  const accent = ACCENTS[type?.accent] ?? ACCENTS.cyan;
 
-  const artifacts = token.artifacts
-    .map((artifact, index) => artifactMarkup(artifact, index))
-    .join("");
+  const artifacts = token.artifacts.map((artifact, index) => artifactMarkup(artifact, index)).join("");
 
   $("#drawer-body").innerHTML = `
     <div class="animate-fade-in space-y-5">
@@ -781,7 +778,10 @@ async function handleImport(event) {
     } else {
       toast(`Imported ${result.added} token(s).`, {
         type: result.added ? "success" : "info",
-        title: result.duplicates || result.skipped ? `${result.duplicates} duplicate(s), ${result.skipped} skipped` : undefined
+        title:
+          result.duplicates || result.skipped
+            ? `${result.duplicates} duplicate(s), ${result.skipped} skipped`
+            : undefined
       });
     }
   } catch (error) {

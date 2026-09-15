@@ -135,7 +135,10 @@ export function generateAwsKeyPair() {
  * Build an HS256-shaped JWT. The signature is random (not cryptographically
  * valid) — this is bait, not a usable credential.
  */
-export function generateJwt({ issuer = "canary-ctg", audience = "internal-api", subject = "svc-deploy" } = {}, canaryId) {
+export function generateJwt(
+  { issuer = "canary-ctg", audience = "internal-api", subject = "svc-deploy" } = {},
+  canaryId
+) {
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: "HS256", typ: "JWT" };
   const payload = {
@@ -299,7 +302,7 @@ export function buildSnippets(token) {
  */
 export function generateToken(config) {
   const id = generateCanaryId();
-  const mode = config.type === "web-bug" ? config.mode ?? "GET" : config.mode ?? "POST";
+  const mode = config.type === "web-bug" ? (config.mode ?? "GET") : (config.mode ?? "POST");
   const token = {
     id,
     type: config.type,

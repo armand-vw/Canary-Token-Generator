@@ -17,7 +17,7 @@ web bugs, decoy PDFs, fake credentials and `.env` bait — to detect unauthorize
 
 ## Overview
 
-A **canary token** (or *honeytoken*) is digital bait. It looks valuable but has no legitimate
+A **canary token** (or _honeytoken_) is digital bait. It looks valuable but has no legitimate
 use — so the moment it is accessed, you have a high-signal indicator that something is wrong.
 Canary tokens catch attackers who have bypassed perimeter controls, insiders poking at data they
 shouldn't, and secrets exfiltrated from repos or shared drives.
@@ -31,15 +31,15 @@ browser's `localStorage` and alerts are delivered straight to a webhook you cont
 
 ## Features
 
-| | Feature |
-|---|---|
-| 🕸️ | **Web Bug / Tracking Link** — unique URL plus ready-to-paste HTML, Markdown and cURL snippets |
-| 📄 | **Decoy PDF Documents** — invoice / CV / handbook / memo templates built with `pdf-lib`, with an embedded tracking link |
-| 🔑 | **Fake Credentials** — AWS key pairs, HS256-shaped JWTs and PostgreSQL connection strings, all tagged with a canary id |
-| 🗄️ | **Decoy `.env` / Config Files** — downloadable secrets files with a hidden tracking endpoint baked in |
-| 📊 | **Token register** — local dashboard with search, filter, one-click copy, delete, JSON export/import |
-| 🎯 | **Delivery options** — GET tracking pixel (CORS-safe) or POST JSON payloads, with automatic `no-cors` fallback |
-| 🌙 | **Enterprise-style dark UI** — responsive Tailwind dashboard, Lucide icons, accessible focus handling |
+|     | Feature                                                                                                                 |
+| --- | ----------------------------------------------------------------------------------------------------------------------- |
+| 🕸️  | **Web Bug / Tracking Link** — unique URL plus ready-to-paste HTML, Markdown and cURL snippets                           |
+| 📄  | **Decoy PDF Documents** — invoice / CV / handbook / memo templates built with `pdf-lib`, with an embedded tracking link |
+| 🔑  | **Fake Credentials** — AWS key pairs, HS256-shaped JWTs and PostgreSQL connection strings, all tagged with a canary id  |
+| 🗄️  | **Decoy `.env` / Config Files** — downloadable secrets files with a hidden tracking endpoint baked in                   |
+| 📊  | **Token register** — local dashboard with search, filter, one-click copy, delete, JSON export/import                    |
+| 🎯  | **Delivery options** — GET tracking pixel (CORS-safe) or POST JSON payloads, with automatic `no-cors` fallback          |
+| 🌙  | **Enterprise-style dark UI** — responsive Tailwind dashboard, Lucide icons, accessible focus handling                   |
 
 ## Architecture
 
@@ -72,12 +72,12 @@ js/templates.js        Documentation content
 
 ### Choosing a webhook endpoint
 
-| Provider | Works out of the box? | Notes |
-|---|---|---|
-| [Webhook.site](https://webhook.site) | ✅ | Easiest for testing; permissive CORS. |
-| Custom serverless function | ✅ | Cloudflare Worker, Lambda Function URL, Supabase Edge Function. |
-| Discord webhook | ⚠️ | Browser `POST` is CORS-blocked and the payload shape differs — relay through a serverless proxy. |
-| Slack webhook | ⚠️ | Same CORS/payload caveats as Discord. |
+| Provider                             | Works out of the box? | Notes                                                                                            |
+| ------------------------------------ | --------------------- | ------------------------------------------------------------------------------------------------ |
+| [Webhook.site](https://webhook.site) | ✅                    | Easiest for testing; permissive CORS.                                                            |
+| Custom serverless function           | ✅                    | Cloudflare Worker, Lambda Function URL, Supabase Edge Function.                                  |
+| Discord webhook                      | ⚠️                    | Browser `POST` is CORS-blocked and the payload shape differs — relay through a serverless proxy. |
+| Slack webhook                        | ⚠️                    | Same CORS/payload caveats as Discord.                                                            |
 
 The result panel includes a **Send test beacon** button so you can confirm delivery before
 deploying. If a cross-origin `POST` is blocked, the app retries with `no-cors` so the request is
@@ -108,7 +108,7 @@ into the body.
 
 Modern PDF viewers intentionally block documents from silently fetching remote resources, because
 that behaviour is itself a tracking vulnerability. A PDF therefore **cannot reliably beacon on
-*open***. This tool embeds the tracking URL as a real `/Link` annotation, so the alert fires when a
+_open_**. This tool embeds the tracking URL as a real `/Link` annotation, so the alert fires when a
 reader **clicks** it. Treat the PDF as a click-triggered canary.
 
 ## Local development

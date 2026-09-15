@@ -1,19 +1,8 @@
 /**
- * pdfGenerator.js — client-side decoy PDF construction
- * ----------------------------------------------------------------------------
- * Builds realistic PDF documents with pdf-lib and embeds a link annotation
- * pointing at the canary beacon. pdf-lib is lazy-loaded the first time a PDF is
- * requested, so the rest of the app never pays for its ~1 MB.
+ * pdfGenerator.js — client-side decoy PDF construction. pdf-lib is lazy-loaded.
  *
- * The bare "pdf-lib" specifier is resolved by the browser via the import map in
- * index.html and by Node/Vitest via node_modules, so this same module is
- * testable without a bundler.
- *
- * IMPORTANT / HONEST LIMITATION
- * Modern PDF viewers do not auto-fetch remote assets embedded in documents
- * (that behaviour is treated as a tracking vulnerability). There is therefore
- * no reliable way to beacon on *open*. Instead we embed a clickable link: the
- * alert fires when a reader follows it. The in-app UI states this plainly.
+ * LIMITATION: viewers block silent remote fetches, so the embedded link beacons
+ * only when a reader clicks it — not on open.
  */
 
 import { slugify } from "./tokenEngine.js";
@@ -24,7 +13,6 @@ const MARGIN = 54;
 /** @type {Promise<typeof import("pdf-lib")> | null} */
 let pdfLibPromise = null;
 
-/** Lazily import pdf-lib once and cache the module promise. */
 function loadPdfLib() {
   if (!pdfLibPromise) {
     pdfLibPromise = import("pdf-lib").catch((error) => {
@@ -35,7 +23,6 @@ function loadPdfLib() {
   return pdfLibPromise;
 }
 
-/** Greedy word-wrap using the measured width of the active font. */
 function wrapText(text, font, size, maxWidth) {
   const words = String(text).split(/\s+/);
   const lines = [];
@@ -52,10 +39,6 @@ function wrapText(text, font, size, maxWidth) {
   if (line) lines.push(line);
   return lines;
 }
-
-/* ============================================================================
- * Decoy document content by preset
- * ========================================================================== */
 
 function contentFor(preset, token) {
   const ref = token.id.toUpperCase();
@@ -187,10 +170,6 @@ function contentFor(preset, token) {
   }
 }
 
-/* ============================================================================
- * PDF assembly
- * ========================================================================== */
-
 /**
  * Build the decoy PDF.
  * @param {import('./store.js').CanaryToken} token
@@ -219,12 +198,10 @@ export async function generatePdf(token) {
   const hairline = rgb(0.85, 0.87, 0.9);
   const maxWidth = A4.width - MARGIN * 2;
 
-  // --- Header band -----------------------------------------------------------
   page.drawRectangle({ x: 0, y: A4.height - 96, width: A4.width, height: 96, color: rgb(0.06, 0.09, 0.16) });
   page.drawText(content.brand, { x: MARGIN, y: A4.height - 50, size: 10, font: bold, color: rgb(0.55, 0.7, 0.8) });
   page.drawText(content.title, { x: MARGIN, y: A4.height - 80, size: 26, font: bold, color: rgb(1, 1, 1) });
 
-  // --- Meta line -------------------------------------------------------------
   let y = A4.height - 128;
   content.meta.forEach((line, index) => {
     page.drawText(line, { x: MARGIN, y, size: 9, font, color: muted });
@@ -232,7 +209,6 @@ export async function generatePdf(token) {
     if (index === content.meta.length - 1) y -= 8;
   });
 
-  // --- Body blocks -----------------------------------------------------------
   for (const block of content.blocks) {
     if (y < 170) break; // keep the footer + tracking link on page one
 
@@ -260,7 +236,6 @@ export async function generatePdf(token) {
     y -= 14;
   }
 
-  // --- Tracking footer (visible link + URI annotation) -----------------------
   const footerY = 96;
   page.drawLine({
     start: { x: MARGIN, y: footerY + 44 },

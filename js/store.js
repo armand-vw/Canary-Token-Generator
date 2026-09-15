@@ -1,12 +1,6 @@
 /**
- * store.js — local persistence for generated canary tokens
- * ----------------------------------------------------------------------------
- * Tokens live in localStorage under a versioned key. This is deliberate: the
- * app has no backend, so the browser *is* the database. The module exposes a
- * tiny observable API so views can re-render whenever tokens change.
- *
- * Every read/write is defensive — Safari private mode, disabled storage and
- * quota errors are all handled without throwing into the UI.
+ * store.js — localStorage persistence for generated tokens. Reads and writes
+ * are defensive: private mode, disabled storage and quota errors never throw.
  */
 
 const STORAGE_KEY = "ctg.tokens.v1";
@@ -85,12 +79,10 @@ export function addToken(token) {
   return writeAll(tokens);
 }
 
-/** Remove a single token by id. */
 export function removeToken(id) {
   return writeAll(readAll().filter((token) => token.id !== id));
 }
 
-/** Remove every stored token. */
 export function clearTokens() {
   return writeAll([]);
 }
@@ -152,7 +144,6 @@ export function importPayload(jsonText) {
   return { added, duplicates, skipped };
 }
 
-/** Aggregate counts used by the dashboard stat cards. */
 export function summarize(tokens = readAll()) {
   const byType = tokens.reduce((acc, token) => {
     acc[token.type] = (acc[token.type] ?? 0) + 1;

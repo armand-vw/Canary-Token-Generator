@@ -1,12 +1,6 @@
 /**
- * kitBuilder.js — assemble a downloadable "deployment kit"
- * ----------------------------------------------------------------------------
- * Bundles the user's token register into a single ZIP: a human-readable
- * deployment guide, the machine-readable register, per-token snippets, decoy
- * files, QR SVGs and freshly generated PDFs.
- *
- * `fflate` is resolved through the import map in the browser and node_modules
- * under test, so this module is fully unit-testable (see tests/kitBuilder.test.js).
+ * kitBuilder.js — packages the register, snippets, decoy files, QR SVGs and
+ * generated PDFs into a single deployment-kit ZIP (fflate).
  */
 
 import { zipSync, strToU8 } from "fflate";
@@ -123,7 +117,6 @@ export async function buildDeploymentKit(tokens, payload, { includePdfs = true }
   };
 }
 
-/** Suggested filename for the archive. */
 export function deploymentKitFilename(date = new Date()) {
   return `canary-deployment-kit-${date.toISOString().slice(0, 10)}.zip`;
 }

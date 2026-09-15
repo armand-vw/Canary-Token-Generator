@@ -1,12 +1,6 @@
 /**
- * qrGenerator.js — QR-code canary rendering
- * ----------------------------------------------------------------------------
- * Renders a beacon URL as a scannable QR code. The `qrcode` dependency is
- * lazy-loaded (and resolved through the app's import map in the browser, or
- * node_modules under test) so it costs nothing until a QR token is created.
- *
- * We emit SVG rather than PNG deliberately: it needs no canvas, is crisp at any
- * print size, and is easy to embed in a downloadable deployment kit.
+ * qrGenerator.js — renders a beacon URL as a scannable QR. Emits SVG (no canvas
+ * needed, crisp at any print size); the qrcode dependency is lazy-loaded.
  */
 
 /** @type {Promise<any> | null} */

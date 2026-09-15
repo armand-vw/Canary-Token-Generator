@@ -1,19 +1,8 @@
 /**
- * ui.js — presentation-layer helpers
- * ----------------------------------------------------------------------------
- * Small, dependency-free helpers used across the app: safe HTML escaping,
- * Lucide icon hydration, toasts, copy-to-clipboard with visual feedback, the
- * configurator drawer, the confirm dialog, file downloads and formatting.
- *
- * Nothing here touches application state or the network — that lives in
- * tokenEngine.js / store.js.
+ * ui.js — presentation helpers: toasts, drawer, clipboard, formatting, downloads.
  */
 
 const DRAWER_ANIM_MS = 300;
-
-/* ============================================================================
- * DOM / rendering helpers
- * ========================================================================== */
 
 /** Escape a value for safe interpolation into an HTML template string. */
 export function escapeHtml(value) {
@@ -25,11 +14,7 @@ export function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-/**
- * Replace every <i data-lucide="..."> in the document with its SVG. Safe to
- * call after any render; if the Lucide CDN failed to load it degrades silently
- * to empty inline placeholders rather than throwing.
- */
+/** Replace every data-lucide placeholder with its SVG; no-op if Lucide failed to load. */
 export function refreshIcons() {
   const lucide = /** @type {any} */ (window).lucide;
   if (typeof lucide?.createIcons !== "function") return;
@@ -55,10 +40,6 @@ export const $ = (selector, scope = document) => scope.querySelector(selector);
  * @returns {any[]}
  */
 export const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
-
-/* ============================================================================
- * Formatting
- * ========================================================================== */
 
 export function formatDate(iso) {
   const date = new Date(iso);
@@ -86,17 +67,12 @@ export function formatRelative(iso) {
   return formatDate(iso);
 }
 
-/** Format a byte count for the PDF / file download UI. */
 export function formatBytes(bytes) {
   if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
   const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
   return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
-
-/* ============================================================================
- * Network / input validation
- * ========================================================================== */
 
 /**
  * Validate a user-supplied endpoint URL.
@@ -120,7 +96,6 @@ export function validateUrl(value) {
   return { ok: true, url };
 }
 
-/** True when the string parses as JSON. */
 export function isValidJson(value) {
   try {
     JSON.parse(value);
@@ -129,10 +104,6 @@ export function isValidJson(value) {
     return false;
   }
 }
-
-/* ============================================================================
- * Clipboard
- * ========================================================================== */
 
 /**
  * Copy text to the clipboard, falling back to a hidden textarea when the
@@ -164,10 +135,7 @@ export async function copyText(text) {
   }
 }
 
-/**
- * Wire copy-to-clipboard onto any button carrying `data-copy="<text>"`.
- * Shows an inline check icon for a moment as feedback.
- */
+/** Wire copy-to-clipboard onto any button carrying data-copy, with inline feedback. */
 export function bindCopyButtons(scope = document) {
   $$("[data-copy]", scope).forEach((button) => {
     if (button.dataset.copyBound === "true") return;
@@ -198,10 +166,6 @@ export function bindCopyButtons(scope = document) {
     });
   });
 }
-
-/* ============================================================================
- * Toasts
- * ========================================================================== */
 
 const TOAST_STYLES = {
   success: { border: "border-emerald-500/40", bg: "bg-emerald-500/10", text: "text-emerald-200", icon: "check-circle" },
@@ -246,10 +210,6 @@ export function toast(message, options = {}) {
   refreshIcons();
   window.setTimeout(dismiss, duration);
 }
-
-/* ============================================================================
- * Confirm dialog
- * ========================================================================== */
 
 /**
  * Promise-based confirmation dialog.
@@ -296,13 +256,8 @@ export function confirmDialog({ title = "Are you sure?", message = "", confirmTe
   });
 }
 
-/* ============================================================================
- * Configurator drawer
- * ========================================================================== */
-
 let drawerCloseHandler = null;
 
-/** Current close callback (used by ESC / backdrop), if any. */
 export function setDrawerCloseHandler(handler) {
   drawerCloseHandler = handler;
 }
@@ -331,7 +286,6 @@ export function closeDrawer() {
   }, DRAWER_ANIM_MS);
 }
 
-/** Attach the one-time drawer dismiss listeners. */
 export function initDrawer() {
   $("#drawer-close")?.addEventListener("click", () => {
     closeDrawer();
@@ -349,11 +303,6 @@ export function initDrawer() {
   });
 }
 
-/* ============================================================================
- * Downloads
- * ========================================================================== */
-
-/** Trigger a client-side file download via an object URL. */
 export function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -370,10 +319,6 @@ export function downloadJson(data, filename) {
   downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), filename);
 }
 
-/* ============================================================================
- * Misc
- * ========================================================================== */
-
 export function debounce(fn, wait = 200) {
   let timer;
   return (...args) => {
@@ -382,7 +327,6 @@ export function debounce(fn, wait = 200) {
   };
 }
 
-/** Copy helper used by list views: returns an inline button's data-copy text. */
 export function truncate(text, max = 64) {
   const str = String(text ?? "");
   return str.length > max ? `${str.slice(0, max - 1)}…` : str;

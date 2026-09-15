@@ -1,9 +1,6 @@
 /**
- * app.js — application entry point
- * ----------------------------------------------------------------------------
- * Owns view routing, the configurator workflow, the token dashboard and the
- * docs view. State is intentionally minimal: a current view string plus the
- * currently-open token. Persistence is delegated to store.js.
+ * app.js — application entry point: hash routing, configurator workflow, the
+ * token dashboard and the docs view. State lives in store.js.
  */
 
 import * as store from "./store.js";
@@ -42,10 +39,6 @@ import {
   debounce
 } from "./ui.js";
 
-/* ============================================================================
- * View metadata
- * ========================================================================== */
-
 const VIEWS = {
   generate: { title: "Generate Tokens", subtitle: "Pick a decoy type to configure and deploy" },
   tokens: { title: "My Active Tokens", subtitle: "Tokens generated in this browser" },
@@ -66,10 +59,6 @@ const state = {
   filter: "",
   currentToken: null
 };
-
-/* ============================================================================
- * View routing
- * ========================================================================== */
 
 function switchView(view, { scroll = true } = {}) {
   if (!VIEWS[view]) view = "generate";
@@ -97,10 +86,6 @@ function switchView(view, { scroll = true } = {}) {
   closeSidebar();
 }
 
-/* ============================================================================
- * Mobile sidebar
- * ========================================================================== */
-
 function openSidebar() {
   $("#sidebar")?.classList.remove("-translate-x-full");
   $("#sidebar-backdrop")?.classList.remove("hidden");
@@ -110,10 +95,6 @@ function closeSidebar() {
   $("#sidebar")?.classList.add("-translate-x-full");
   $("#sidebar-backdrop")?.classList.add("hidden");
 }
-
-/* ============================================================================
- * Generate view — token type cards
- * ========================================================================== */
 
 function renderTokenCards() {
   const grid = $("#token-type-grid");
@@ -146,10 +127,6 @@ function renderTokenCards() {
 
   refreshIcons();
 }
-
-/* ============================================================================
- * Configurator drawer
- * ========================================================================== */
 
 function openConfigurator(type) {
   const meta = TOKEN_TYPES[type];
@@ -436,10 +413,6 @@ async function handleGenerate(type, form) {
   renderResult(token);
 }
 
-/* ============================================================================
- * Result panel
- * ========================================================================== */
-
 function renderResult(token) {
   const type = TOKEN_TYPES[token.type];
 
@@ -585,7 +558,6 @@ function bindResultActions(token) {
 
   $("#test-beacon")?.addEventListener("click", () => testBeacon(token));
 
-  // Downloadable text files (env / credentials presets).
   $$("[data-download-file]", $("#drawer-body")).forEach((button) => {
     button.addEventListener("click", () => {
       const artifact = token.artifacts[Number(button.dataset.downloadFile)];
@@ -595,7 +567,6 @@ function bindResultActions(token) {
     });
   });
 
-  // Downloadable SVG images (QR canaries).
   $$("[data-download-image]", $("#drawer-body")).forEach((button) => {
     button.addEventListener("click", () => {
       const artifact = token.artifacts[Number(button.dataset.downloadImage)];
@@ -608,7 +579,6 @@ function bindResultActions(token) {
     });
   });
 
-  // PDF generation (lazy-loads pdf-lib).
   $("#download-pdf")?.addEventListener("click", async (event) => {
     const button = event.currentTarget;
     const original = button.innerHTML;
@@ -657,10 +627,6 @@ async function testBeacon(token) {
     type: result.ok ? "success" : "error"
   });
 }
-
-/* ============================================================================
- * Dashboard — My Active Tokens
- * ========================================================================== */
 
 function renderStats(tokens) {
   const container = $("#token-stats");
@@ -819,10 +785,6 @@ function updateTokenCount(tokens) {
   }
 }
 
-/* ============================================================================
- * Export / import / clear
- * ========================================================================== */
-
 async function handleBuildKit() {
   const tokens = store.readAll();
   if (!tokens.length) {
@@ -932,10 +894,6 @@ function populateFilterOptions() {
   select.dataset.populated = "true";
 }
 
-/* ============================================================================
- * Docs
- * ========================================================================== */
-
 function renderDocsView() {
   const container = $("#docs-content");
   if (container && !container.dataset.rendered) {
@@ -952,10 +910,6 @@ function openDocsSection(sectionId) {
   });
 }
 
-/* ============================================================================
- * Bootstrap
- * ========================================================================== */
-
 function init() {
   initDrawer();
   renderTokenCards();
@@ -963,7 +917,6 @@ function init() {
   populateFilterOptions();
   renderDashboard();
 
-  // Navigation
   $$("#sidebar-nav .nav-item").forEach((item) => {
     item.addEventListener("click", () => switchView(item.dataset.view));
   });
@@ -971,13 +924,11 @@ function init() {
   $("#sidebar-close")?.addEventListener("click", closeSidebar);
   $("#sidebar-backdrop")?.addEventListener("click", closeSidebar);
 
-  // Quick actions
   $("#quick-refresh")?.addEventListener("click", () => {
     renderTokenCards();
     toast("Token types refreshed.", { type: "info", duration: 1800 });
   });
 
-  // Dashboard controls
   $("#token-search")?.addEventListener(
     "input",
     debounce((event) => {
@@ -994,20 +945,17 @@ function init() {
   $("#import-tokens")?.addEventListener("change", handleImport);
   $("#clear-tokens")?.addEventListener("click", handleClear);
 
-  // Docs deep links
   $$("[data-docs-link]").forEach((link) => {
     link.addEventListener("click", () => openDocsSection(link.dataset.docsLink));
   });
 
-  // Keep the UI in sync with storage (including cross-tab? localStorage events
-  // are not wired, but every mutation in this tab notifies subscribers).
+  // Re-render the dashboard whenever tokens change.
   store.subscribe((tokens) => {
     updateTokenCount(tokens);
     if (state.view === "tokens") renderDashboard();
   });
   updateTokenCount(store.readAll());
 
-  // Route from the URL hash when present.
   const initial = location.hash.replace("#", "");
   switchView(VIEWS[initial] ? initial : "generate", { scroll: false });
 
@@ -1016,10 +964,7 @@ function init() {
   registerServiceWorker();
 }
 
-/**
- * Register the service worker so the app is installable and works offline.
- * Failures are non-fatal (e.g. unsupported browser, file:// preview).
- */
+/** Register the service worker; failures (unsupported browser, file://) are non-fatal. */
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
   window.addEventListener("load", () => {

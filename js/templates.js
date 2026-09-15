@@ -1,10 +1,4 @@
-/**
- * templates.js — static documentation content
- * ----------------------------------------------------------------------------
- * Kept apart from app.js so the Docs view is copy-editable without touching
- * application logic. Content is authored as trusted HTML strings (no user input
- * is ever interpolated here).
- */
+/** templates.js — static documentation content for the Docs view. */
 
 export const DOCS_SECTIONS = [
   {
@@ -208,7 +202,6 @@ export const DOCS_SECTIONS = [
   }
 ];
 
-/** Render the full Docs view as an HTML string. */
 export function renderDocs() {
   return DOCS_SECTIONS.map((section) => `<section id="${section.id}">${section.html}</section>`).join(`<hr />`);
 }

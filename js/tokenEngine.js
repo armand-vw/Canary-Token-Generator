@@ -1,24 +1,11 @@
 /**
- * tokenEngine.js — canary token generation + beacon delivery
- * ----------------------------------------------------------------------------
- * Pure, framework-free logic for:
- *   1. Minting unique canary ids.
- *   2. Building realistic decoy material (web bugs, fake AWS keys, JWTs,
- *      connection strings, .env files).
- *   3. Formatting deployment snippets (HTML / Markdown / cURL).
- *   4. Dispatching alerts to a user-supplied webhook (GET pixel or POST JSON).
- *
- * The module has no DOM dependencies beyond `fetch`/`Image` at dispatch time,
- * which keeps it easy to reason about and unit-test.
+ * tokenEngine.js — canary token generation and beacon delivery. No DOM
+ * dependency beyond fetch/Image; fully unit-tested.
  */
 
 import { generateQrSvg } from "./qrGenerator.js";
 
 /** @typedef {import("./store.js").CanaryToken} CanaryToken */
-
-/* ============================================================================
- * Token type registry (drives the "Generate" cards + configurator forms)
- * ========================================================================== */
 
 export const TOKEN_TYPES = {
   "web-bug": {
@@ -92,10 +79,6 @@ export const PDF_PRESETS = {
   memo: { id: "memo", name: "Internal Memo", title: "Internal Memorandum" }
 };
 
-/* ============================================================================
- * Random / crypto helpers
- * ========================================================================== */
-
 const BASE62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const UPPER_ALNUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const AWS_SECRET_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -117,7 +100,6 @@ function randomBytes(length) {
   return bytes;
 }
 
-/** URL-safe base64 without padding. */
 export function base64Url(input) {
   const bytes = typeof input === "string" ? new TextEncoder().encode(input) : input;
   let binary = "";
@@ -132,11 +114,6 @@ export function generateCanaryId() {
   return `ct_${randomString(22)}`;
 }
 
-/* ============================================================================
- * Decoy material factories
- * ========================================================================== */
-
-/** Realistic AWS access key pair. */
 export function generateAwsKeyPair() {
   return {
     accessKeyId: `AKIA${randomString(16, UPPER_ALNUM)}`,
@@ -145,10 +122,7 @@ export function generateAwsKeyPair() {
   };
 }
 
-/**
- * Build an HS256-shaped JWT. The signature is random (not cryptographically
- * valid) — this is bait, not a usable credential.
- */
+/** Build an HS256-shaped JWT. The signature is random — bait, not a usable credential. */
 export function generateJwt(
   { issuer = "canary-ctg", audience = "internal-api", subject = "svc-deploy" } = {},
   canaryId
@@ -174,10 +148,6 @@ export function generateJwt(
 export function generateDatabaseString(canaryId, { host = "db-prod-01.internal", database = "app_production" } = {}) {
   return `postgresql://svc_${randomString(8).toLowerCase()}:${randomString(24)}@${host}:5432/${database}?sslmode=require&application_name=${canaryId}`;
 }
-
-/* ============================================================================
- * Beacon construction + delivery
- * ========================================================================== */
 
 /** Append canary metadata to the user's endpoint to form the tracking URL. */
 export function buildBeaconUrl(endpoint, token) {
@@ -289,10 +259,6 @@ export async function sendBeacon(token, { test = false } = {}) {
   }
 }
 
-/* ============================================================================
- * Deployment snippets
- * ========================================================================== */
-
 export function buildSnippets(token) {
   const beacon = token.beaconUrl;
   return {
@@ -302,7 +268,6 @@ export function buildSnippets(token) {
   };
 }
 
-/** Turn a label into a filesystem-safe slug (shared by PDF/QR/kit naming). */
 export function slugify(value) {
   return (
     String(value ?? "canary")
@@ -312,10 +277,6 @@ export function slugify(value) {
       .slice(0, 60) || "canary"
   );
 }
-
-/* ============================================================================
- * Token generation (dispatcher)
- * ========================================================================== */
 
 /**
  * Create a token object from a validated configurator payload.
@@ -486,7 +447,6 @@ function buildEnvArtifacts(token) {
   return [{ key: "file", label: `.env (${filename})`, value, language: "bash", kind: "file", filename }];
 }
 
-/** Map a token type accent to a concrete badge class (used by views). */
 export function badgeClassFor(accent) {
   const map = {
     cyan: "badge-cyan",

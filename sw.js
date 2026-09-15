@@ -1,17 +1,7 @@
-/* ============================================================================
- * sw.js — service worker for offline-capable use
- * ----------------------------------------------------------------------------
- * Strategy:
- *   - Precache the same-origin app shell on install.
- *   - Navigations: network-first, falling back to the cached shell offline.
- *   - Same-origin assets: cache-first, then populate the cache in the
- *     background.
- *   - Cross-origin CDN libraries (Lucide, esm.sh): stale-while-revalidate so
- *     they keep working offline once fetched. QR/PDF/ZIP are lazy-loaded, so
- *     those libraries are only available offline after one online use.
- *
- * Bump CACHE_VERSION on every release to retire older caches.
- * ========================================================================== */
+/*
+ * sw.js — service worker: precaches the app shell, network-first navigation and
+ * stale-while-revalidate for CDN libraries. Bump CACHE_VERSION on release.
+ */
 
 const CACHE_VERSION = "canary-tokens-v1";
 

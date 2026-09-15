@@ -3,13 +3,14 @@
 <img src="assets/img/banner.svg" alt="Canary Token Generator — client-side decoy tokens for breach and intrusion detection" width="100%" />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22d3ee.svg)](./LICENSE)
+[![CI](https://github.com/armand-vw/Canary-Token-Generator/actions/workflows/ci.yml/badge.svg)](https://github.com/armand-vw/Canary-Token-Generator/actions/workflows/ci.yml)
 [![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-0ea5e9.svg)](https://armand-vw.github.io/Canary-Token-Generator/)
 [![100% client-side](https://img.shields.io/badge/architecture-100%25%20client--side-06b6d4.svg)](#architecture)
 
-**A sleek, zero-dependency security utility for generating and deploying canary tokens —
-web bugs, decoy PDFs, fake credentials and `.env` bait — to detect unauthorized access.**
+**A sleek, dependency-light security utility for generating and deploying canary tokens —
+web bugs, decoy PDFs, QR codes, fake credentials and `.env` bait — to detect unauthorized access.**
 
-[**Live Demo**](https://armand-vw.github.io/Canary-Token-Generator/) · [How it works](#how-it-works) · [Webhook setup](#choosing-a-webhook-endpoint) · [Security](#-security--ethics)
+[**Live Demo**](https://armand-vw.github.io/Canary-Token-Generator/) · [How it works](#how-it-works) · [Webhook setup](#choosing-a-webhook-endpoint) · [Contributing](./CONTRIBUTING.md) · [Security](#-security--ethics)
 
 </div>
 
@@ -34,31 +35,57 @@ browser's `localStorage` and alerts are delivered straight to a webhook you cont
 |     | Feature                                                                                                                 |
 | --- | ----------------------------------------------------------------------------------------------------------------------- |
 | 🕸️  | **Web Bug / Tracking Link** — unique URL plus ready-to-paste HTML, Markdown and cURL snippets                           |
+| 🔳  | **QR Code Canary** — scannable QR rendered to SVG for print, slides or physical assets                                  |
 | 📄  | **Decoy PDF Documents** — invoice / CV / handbook / memo templates built with `pdf-lib`, with an embedded tracking link |
 | 🔑  | **Fake Credentials** — AWS key pairs, HS256-shaped JWTs and PostgreSQL connection strings, all tagged with a canary id  |
 | 🗄️  | **Decoy `.env` / Config Files** — downloadable secrets files with a hidden tracking endpoint baked in                   |
 | 📊  | **Token register** — local dashboard with search, filter, one-click copy, delete, JSON export/import                    |
+| 📦  | **Deployment Kit** — export the whole register, snippets, decoy files, QRs and PDFs as a single ZIP                     |
 | 🎯  | **Delivery options** — GET tracking pixel (CORS-safe) or POST JSON payloads, with automatic `no-cors` fallback          |
+| 📱  | **Installable PWA** — offline-capable app shell, no account required                                                    |
 | 🌙  | **Enterprise-style dark UI** — responsive Tailwind dashboard, Lucide icons, accessible focus handling                   |
 
 ## Architecture
 
 ```
-index.html            Layout, Tailwind CDN theme, sidebar/tabs, drawer + toast mounts
-assets/css/styles.css  Component styles, scrollbars, docs typography
-assets/img/            SVG logo, favicon and README banner
-js/app.js              Entry point: hash routing, configurator flow, dashboard rendering
-js/tokenEngine.js      Canary id minting, decoy factories, beacon delivery, snippets
-js/pdfGenerator.js     Lazy-loaded pdf-lib PDF builder + link annotation
-js/store.js            Versioned localStorage persistence with subscribe/export/import
-js/ui.js               Toasts, drawer, confirm dialog, clipboard, downloads, formatting
-js/templates.js        Documentation content
+index.html                 Layout, import map, Tailwind link, drawer + toast mounts
+manifest.webmanifest       PWA manifest
+sw.js                      Service worker (offline app shell)
+assets/css/tailwind.input.css  Tailwind source (compiled -> styles.css)
+assets/css/styles.css      Compiled stylesheet (committed)
+assets/img/                Logo, icons and social preview
+js/app.js                  Entry point: hash routing, configurator flow, dashboard rendering
+js/tokenEngine.js          Canary id minting, decoy factories, beacon delivery, snippets
+js/qrGenerator.js          QR-code SVG rendering
+js/pdfGenerator.js         Lazy-loaded pdf-lib PDF builder + link annotation
+js/kitBuilder.js           Deployment-kit ZIP assembly (fflate)
+js/store.js                Versioned localStorage persistence with subscribe/export/import
+js/ui.js                   Toasts, drawer, confirm dialog, clipboard, downloads, formatting
+js/templates.js            In-app documentation content
+tests/                     Vitest suites
 ```
 
-- **No build step.** Native ES modules are loaded directly by the browser.
-- **Lazy heavy dependencies.** `pdf-lib` (~1 MB) is imported from `esm.sh` only when a PDF is
-  actually generated, keeping first load fast.
-- **Pinned CDNs.** Tailwind Play CDN `3.4.16`, Lucide `0.462.0`, pdf-lib `1.17.1`.
+- **No build step required to run or deploy.** Native ES modules load directly in the browser and
+  the compiled CSS is committed. Tooling (`npm run build:css`, tests, lint) exists only for
+  development and CI.
+- **Lazy heavy dependencies.** `pdf-lib`, `qrcode` and `fflate` are imported only when their
+  feature is used, keeping first load fast.
+- **Pinned dependencies via import map.** The browser and the test runner resolve the same bare
+  specifiers (`pdf-lib`, `qrcode`, `fflate`), so source is identical in both environments.
+
+## Quality checks
+
+CI runs on every push and pull request to `main`:
+
+| Check             | Command                |
+| ----------------- | ---------------------- |
+| Lint              | `npm run lint`         |
+| Formatting        | `npm run format:check` |
+| Types (JSDoc)     | `npm run typecheck`    |
+| Tests (51)        | `npm run test`         |
+| CSS is up to date | `npm run build:css`    |
+
+Run everything locally with `npm run verify`.
 
 ## How it works
 
@@ -113,17 +140,20 @@ reader **clicks** it. Treat the PDF as a click-triggered canary.
 
 ## Local development
 
-No dependencies to install. Serve the folder over HTTP (ES modules require it):
+The app itself has no runtime dependencies, but the dev tooling requires **Node.js 20+**.
 
 ```bash
-# Python
-python3 -m http.server 8080
-
-# or Node
-npx serve .
+npm ci
+python3 -m http.server 8080   # or: npx serve .
 ```
 
-Then open <http://localhost:8080>.
+Then open <http://localhost:8080>. If you change Tailwind classes, rebuild the committed CSS:
+
+```bash
+npm run build:css
+```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full script list and project conventions.
 
 ## Deploying to GitHub Pages
 
@@ -132,7 +162,13 @@ Then open <http://localhost:8080>.
 3. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/ (root)`.
 4. Save — the site publishes at `https://<username>.github.io/<repo>/`.
 
-The included `.nojekyll` file ensures GitHub serves the files exactly as-is.
+The included `.nojekyll` file ensures GitHub serves the files exactly as-is. No build step or
+Action is needed — the compiled stylesheet is committed, and CI verifies it stays in sync.
+
+## Project status
+
+See [CHANGELOG.md](./CHANGELOG.md) for release history. Contributions are welcome —
+read [CONTRIBUTING.md](./CONTRIBUTING.md) and the [Code of Conduct](./CODE_OF_CONDUCT.md) first.
 
 ## ⚠️ Security & ethics
 

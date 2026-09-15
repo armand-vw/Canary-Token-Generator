@@ -1,0 +1,22 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Node tooling (kept out of the repo — this project ships with zero build step)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local secrets (never commit real webhook URLs or canary configs)
+.env
+.env.*
+!.env.example
+
+# Local preview artifacts
+_site/
+.cache/

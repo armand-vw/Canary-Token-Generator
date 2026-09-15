@@ -1,0 +1,2 @@
+# Disables Jekyll processing on GitHub Pages so files and folders
+# (including this project's modular JS) are served exactly as-is.

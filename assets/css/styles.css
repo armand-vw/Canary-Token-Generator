@@ -1,0 +1,405 @@
+/* ============================================================================
+   Canary Token Generator — component styles
+   ----------------------------------------------------------------------------
+   Tailwind's Play CDN handles the utility layer. This file provides the handful
+   of reusable component classes referenced from index.html / app.js, plus small
+   touches (scrollbars, focus rings, prose) that are awkward as inline utilities.
+   ========================================================================== */
+
+:root {
+  --ring: 34 211 238; /* cyan-400 */
+  --surface: 15 23 42; /* slate-900 */
+  --border: 30 41 59; /* slate-800 */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Keep focus visible and consistent for keyboard users. */
+:focus-visible {
+  outline: 2px solid rgb(var(--ring));
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* ----------------------------- Scrollbars ----------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #1e293b;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #334155;
+  background-clip: content-box;
+}
+
+/* ----------------------------- Navigation ----------------------------- */
+.nav-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #94a3b8; /* slate-400 */
+  transition: background-color 0.15s ease, color 0.15s ease;
+  text-align: left;
+}
+.nav-item:hover {
+  background-color: rgba(30, 41, 59, 0.6);
+  color: #e2e8f0;
+}
+.nav-item[aria-current="page"] {
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.14), rgba(34, 211, 238, 0.03));
+  color: #67e8f9; /* cyan-300 */
+  box-shadow: inset 2px 0 0 0 #22d3ee;
+}
+
+/* ----------------------------- Buttons ----------------------------- */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primary {
+  background-color: #06b6d4;
+  color: #041018;
+  border: 1px solid #22d3ee;
+  box-shadow: 0 6px 18px -8px rgba(34, 211, 238, 0.7);
+}
+.btn-primary:hover {
+  background-color: #22d3ee;
+}
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: #0f172a;
+  color: #cbd5e1;
+  border: 1px solid #1e293b;
+}
+.btn-secondary:hover {
+  border-color: #334155;
+  color: #f1f5f9;
+  background-color: #131c31;
+}
+
+.btn-danger {
+  background-color: rgba(244, 63, 94, 0.1);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+}
+.btn-danger:hover {
+  background-color: rgba(244, 63, 94, 0.18);
+  border-color: rgba(244, 63, 94, 0.55);
+  color: #fecdd3;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: #94a3b8;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.icon-btn:hover {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+/* ----------------------------- Form controls ----------------------------- */
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #1e293b;
+  background-color: #020617;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #e2e8f0;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input::placeholder {
+  color: #475569;
+}
+.input:focus {
+  outline: none;
+  border-color: #0891b2;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.25);
+}
+.input[aria-invalid="true"] {
+  border-color: rgba(244, 63, 94, 0.6);
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.18);
+}
+textarea.input {
+  min-height: 7rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+label.field-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #cbd5e1;
+}
+.field-hint {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+.field-error {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: #fb7185;
+}
+
+/* ----------------------------- Copy feedback ----------------------------- */
+.copy-btn.is-copied {
+  border-color: rgba(16, 185, 129, 0.6) !important;
+  color: #6ee7b7 !important;
+}
+
+/* ----------------------------- Token / code surfaces ----------------------------- */
+.code-surface {
+  position: relative;
+  border-radius: 0.75rem;
+  border: 1px solid #1e293b;
+  background-color: #020617;
+}
+.code-surface pre {
+  margin: 0;
+  overflow-x: auto;
+  padding: 0.875rem 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: #a5f3fc;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+kbd {
+  border-radius: 0.375rem;
+  border: 1px solid #334155;
+  background-color: #0f172a;
+  padding: 0.125rem 0.375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+
+/* ----------------------------- Badges ----------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 9999px;
+  border: 1px solid #1e293b;
+  background-color: rgba(15, 23, 42, 0.8);
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.badge-cyan {
+  border-color: rgba(34, 211, 238, 0.35);
+  background-color: rgba(34, 211, 238, 0.1);
+  color: #67e8f9;
+}
+.badge-amber {
+  border-color: rgba(245, 158, 11, 0.35);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #fcd34d;
+}
+.badge-emerald {
+  border-color: rgba(16, 185, 129, 0.35);
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #6ee7b7;
+}
+.badge-violet {
+  border-color: rgba(139, 92, 246, 0.35);
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #c4b5fd;
+}
+.badge-rose {
+  border-color: rgba(244, 63, 94, 0.35);
+  background-color: rgba(244, 63, 94, 0.1);
+  color: #fda4af;
+}
+
+/* ----------------------------- Docs prose ----------------------------- */
+.docs-prose {
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: #cbd5e1;
+}
+.docs-prose h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+}
+.docs-prose h2 {
+  margin: 2.25rem 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #1e293b;
+}
+.docs-prose h3 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+.docs-prose p {
+  margin: 0.75rem 0;
+  color: #94a3b8;
+}
+.docs-prose a {
+  color: #67e8f9;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.docs-prose a:hover {
+  color: #a5f3fc;
+}
+.docs-prose ul,
+.docs-prose ol {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+  color: #94a3b8;
+}
+.docs-prose ul {
+  list-style: disc;
+}
+.docs-prose ol {
+  list-style: decimal;
+}
+.docs-prose li {
+  margin: 0.35rem 0;
+}
+.docs-prose li::marker {
+  color: #0891b2;
+}
+.docs-prose code {
+  border-radius: 0.375rem;
+  border: 1px solid #1e293b;
+  background-color: rgba(2, 6, 23, 0.8);
+  padding: 0.1rem 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125em;
+  color: #a5f3fc;
+}
+.docs-prose pre {
+  margin: 1rem 0;
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #1e293b;
+  background-color: #020617;
+  padding: 1rem;
+}
+.docs-prose pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #a5f3fc;
+}
+.docs-prose strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+.docs-prose hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #1e293b;
+}
+.docs-callout {
+  margin: 1.25rem 0;
+  border-radius: 0.75rem;
+  border: 1px solid;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+}
+.docs-callout p {
+  margin: 0.25rem 0 0;
+}
+.docs-callout--warning {
+  border-color: rgba(245, 158, 11, 0.3);
+  background-color: rgba(245, 158, 11, 0.06);
+}
+.docs-callout--warning strong {
+  color: #fcd34d;
+}
+.docs-callout--info {
+  border-color: rgba(34, 211, 238, 0.3);
+  background-color: rgba(34, 211, 238, 0.06);
+}
+.docs-callout--info strong {
+  color: #67e8f9;
+}
+
+/* Anchored sub-sections scrolled into view should breathe. */
+.docs-prose [id] {
+  scroll-margin-top: 5rem;
+}
+
+/* ----------------------------- Misc ----------------------------- */
+.spinner {
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

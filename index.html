@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canary Token Generator — Client-side decoy tokens for intrusion detection</title>
+    <meta
+      name="description"
+      content="Generate and deploy canary tokens — web bugs, decoy PDFs, fake credentials and .env files — to detect unauthorized access. 100% client-side, no sign-up, deployable to GitHub Pages."
+    />
+    <meta name="theme-color" content="#020617" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="author" content="Armand van Wyk" />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Canary Token Generator" />
+    <meta
+      property="og:description"
+      content="Client-side decoy tokens for breach & intrusion detection. Web bugs, decoy PDFs, fake credentials and .env traps."
+    />
+    <meta property="og:image" content="assets/img/banner.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+
+    <!-- Tailwind CSS (Play CDN, pinned) -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      // Theme tokens are kept intentionally small: the palette leans on Tailwind's
+      // built-in slate/zinc/cyan/amber/rose scales for an enterprise security look.
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [
+                "ui-sans-serif",
+                "system-ui",
+                "-apple-system",
+                "Segoe UI",
+                "Roboto",
+                "Helvetica Neue",
+                "Arial",
+                "sans-serif"
+              ],
+              mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"]
+            },
+            keyframes: {
+              "fade-in": {
+                "0%": { opacity: "0", transform: "translateY(4px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" }
+              },
+              "slide-in": {
+                "0%": { opacity: "0", transform: "translateX(24px)" },
+                "100%": { opacity: "1", transform: "translateX(0)" }
+              },
+              "toast-in": {
+                "0%": { opacity: "0", transform: "translateY(10px) scale(.98)" },
+                "100%": { opacity: "1", transform: "translateY(0) scale(1)" }
+              },
+              "pulse-ring": {
+                "0%": { transform: "scale(.85)", opacity: ".65" },
+                "80%,100%": { transform: "scale(1.6)", opacity: "0" }
+              }
+            },
+            animation: {
+              "fade-in": "fade-in .25s ease-out both",
+              "slide-in": "slide-in .28s cubic-bezier(.22,1,.36,1) both",
+              "toast-in": "toast-in .22s ease-out both",
+              "pulse-ring": "pulse-ring 2.4s cubic-bezier(.4,0,.6,1) infinite"
+            }
+          }
+        }
+      };
+    </script>
+
+    <link rel="stylesheet" href="assets/css/styles.css" />
+
+    <!-- Lucide icons (UMD, pinned). app.js calls lucide.createIcons() after each render. -->
+    <script defer src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  </head>
+
+  <body class="min-h-screen bg-slate-950 font-sans text-slate-200 antialiased selection:bg-cyan-500/30">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-cyan-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-slate-950"
+      >Skip to content</a
+    >
+
+    <noscript>
+      <div class="m-4 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">
+        This tool is built with JavaScript. Please enable JavaScript to generate canary tokens.
+      </div>
+    </noscript>
+
+    <div class="flex min-h-screen">
+      <!-- ============================= SIDEBAR ============================= -->
+      <aside
+        id="sidebar"
+        class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-slate-800/80 bg-slate-900/95 backdrop-blur transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0"
+        aria-label="Primary"
+      >
+        <div class="flex h-16 items-center gap-3 border-b border-slate-800/80 px-5">
+          <img src="assets/img/favicon.svg" alt="" class="h-9 w-9" width="36" height="36" />
+          <div class="leading-tight">
+            <p class="text-sm font-semibold text-slate-100">Canary Tokens</p>
+            <p class="text-xs text-slate-500">Detection Utility</p>
+          </div>
+          <button
+            type="button"
+            id="sidebar-close"
+            class="ml-auto rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 lg:hidden"
+            aria-label="Close navigation"
+          >
+            <i data-lucide="x" class="h-5 w-5"></i>
+          </button>
+        </div>
+
+        <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" id="sidebar-nav">
+          <button type="button" class="nav-item" data-view="generate" aria-current="page">
+            <i data-lucide="radar" class="h-[18px] w-[18px]"></i>
+            <span>Generate Tokens</span>
+          </button>
+          <button type="button" class="nav-item" data-view="tokens">
+            <i data-lucide="database" class="h-[18px] w-[18px]"></i>
+            <span>My Active Tokens</span>
+            <span
+              id="nav-token-count"
+              class="ml-auto hidden rounded-md bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-300"
+              >0</span
+            >
+          </button>
+          <button type="button" class="nav-item" data-view="docs">
+            <i data-lucide="book-open" class="h-[18px] w-[18px]"></i>
+            <span>Docs / How It Works</span>
+          </button>
+        </nav>
+
+        <div class="border-t border-slate-800/80 p-4">
+          <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+            <p class="flex items-center gap-2 text-xs font-medium text-cyan-300">
+              <i data-lucide="shield-check" class="h-4 w-4"></i>
+              Runs entirely in your browser
+            </p>
+            <p class="mt-1.5 text-xs leading-relaxed text-slate-500">
+              No accounts, no telemetry. Tokens are stored in this browser only.
+            </p>
+          </div>
+          <p class="mt-3 px-1 text-[11px] text-slate-600">v1.0.0 · MIT License</p>
+        </div>
+      </aside>
+
+      <div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-slate-950/70 backdrop-blur-sm lg:hidden"></div>
+
+      <!-- ============================= CONTENT ============================= -->
+      <div class="flex min-w-0 flex-1 flex-col">
+        <header
+          class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-800/80 bg-slate-950/80 px-4 backdrop-blur sm:px-6"
+        >
+          <button
+            type="button"
+            id="sidebar-open"
+            class="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 lg:hidden"
+            aria-label="Open navigation"
+          >
+            <i data-lucide="menu" class="h-5 w-5"></i>
+          </button>
+
+          <div class="min-w-0">
+            <h1 id="view-title" class="truncate text-base font-semibold text-slate-100">Generate Tokens</h1>
+            <p id="view-subtitle" class="hidden truncate text-xs text-slate-500 sm:block">
+              Pick a decoy type to configure and deploy
+            </p>
+          </div>
+
+          <div class="ml-auto flex items-center gap-2">
+            <span
+              class="hidden items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-300 sm:inline-flex"
+            >
+              <span class="relative flex h-1.5 w-1.5">
+                <span class="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-cyan-400"></span>
+                <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-400"></span>
+              </span>
+              Client-side
+            </span>
+            <a
+              href="https://github.com/armand-vw/Canary-Token-Generator"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-300 transition hover:border-slate-700 hover:text-slate-100"
+            >
+              <i data-lucide="github" class="h-4 w-4"></i>
+              <span class="hidden sm:inline">GitHub</span>
+            </a>
+          </div>
+        </header>
+
+        <main id="main" class="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+          <!-- ---------------------- VIEW: GENERATE ---------------------- -->
+          <section data-view-panel="generate" class="mx-auto w-full max-w-6xl animate-fade-in">
+            <div
+              class="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+            >
+              <div>
+                <h2 class="text-lg font-semibold text-slate-100">Deploy a canary</h2>
+                <p class="mt-1 max-w-2xl text-sm leading-relaxed text-slate-400">
+                  A canary token is bait: it looks legitimate but <em>nobody</em> should ever touch it. When it is
+                  accessed, your webhook receives a beacon with the token's identity and timestamp.
+                </p>
+              </div>
+              <button type="button" id="quick-refresh" class="btn-secondary shrink-0">
+                <i data-lucide="refresh-cw" class="h-4 w-4"></i>
+                Refresh
+              </button>
+            </div>
+
+            <h3 class="mb-3 mt-8 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Choose a token type
+            </h3>
+            <div id="token-type-grid" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
+
+            <div
+              class="mt-8 flex items-start gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4 text-sm text-amber-200/90"
+            >
+              <i data-lucide="triangle-alert" class="mt-0.5 h-4 w-4 shrink-0"></i>
+              <p class="leading-relaxed">
+                <strong class="font-semibold text-amber-200">Authorized use only.</strong>
+                Canary tokens are defensive bait. Deploy them only on systems and accounts you own or are explicitly
+                authorized to monitor. See the
+                <button type="button" class="underline underline-offset-2 hover:text-amber-100" data-docs-link="ethics">
+                  ethics &amp; legal notice</button
+                >.
+              </p>
+            </div>
+          </section>
+
+          <!-- ---------------------- VIEW: MY TOKENS ---------------------- -->
+          <section data-view-panel="tokens" class="mx-auto hidden w-full max-w-6xl">
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" id="token-stats"></div>
+
+            <div class="mt-6 rounded-2xl border border-slate-800 bg-slate-900/40">
+              <div class="flex flex-col gap-3 border-b border-slate-800 p-4 lg:flex-row lg:items-center">
+                <div class="relative w-full lg:max-w-xs">
+                  <i
+                    data-lucide="search"
+                    class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                  ></i>
+                  <input
+                    type="search"
+                    id="token-search"
+                    class="input pl-9"
+                    placeholder="Search label, ID, type…"
+                    autocomplete="off"
+                    aria-label="Search tokens"
+                  />
+                </div>
+                <select id="token-filter" class="input lg:w-48" aria-label="Filter by token type">
+                  <option value="">All types</option>
+                </select>
+                <div class="flex flex-wrap gap-2 lg:ml-auto">
+                  <button type="button" id="export-tokens" class="btn-secondary">
+                    <i data-lucide="download" class="h-4 w-4"></i> Export JSON
+                  </button>
+                  <label class="btn-secondary cursor-pointer" for="import-tokens">
+                    <i data-lucide="upload" class="h-4 w-4"></i> Import
+                    <input type="file" id="import-tokens" accept="application/json,.json" class="hidden" />
+                  </label>
+                  <button type="button" id="clear-tokens" class="btn-danger">
+                    <i data-lucide="trash-2" class="h-4 w-4"></i> Clear
+                  </button>
+                </div>
+              </div>
+
+              <div id="token-list" class="divide-y divide-slate-800"></div>
+            </div>
+
+            <p class="mt-3 text-xs text-slate-600">
+              Stored in <code class="text-slate-500">localStorage</code> for this browser only — clearing site data or
+              using Incognito will remove it.
+            </p>
+          </section>
+
+          <!-- ---------------------- VIEW: DOCS ---------------------- -->
+          <section data-view-panel="docs" class="mx-auto hidden w-full max-w-3xl">
+            <div id="docs-content" class="docs-prose"></div>
+          </section>
+        </main>
+
+        <footer class="border-t border-slate-800/80 px-4 py-6 sm:px-6">
+          <div
+            class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 text-xs text-slate-600 sm:flex-row"
+          >
+            <p>
+              Built by
+              <a
+                href="https://github.com/armand-vw"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-medium text-slate-400 hover:text-cyan-300"
+                >Armand van Wyk</a
+              >
+              · Static, client-side security tooling.
+            </p>
+            <p>MIT Licensed · For authorized defensive use only.</p>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- ============================= CONFIGURATOR DRAWER ============================= -->
+    <div id="drawer" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <div id="drawer-backdrop" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
+      <div
+        id="drawer-panel"
+        class="absolute right-0 top-0 flex h-full w-full max-w-xl translate-x-full flex-col border-l border-slate-800 bg-slate-900 shadow-2xl transition-transform duration-300 ease-out"
+      >
+        <div class="flex items-start gap-3 border-b border-slate-800 p-5">
+          <div id="drawer-icon" class="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-2 text-cyan-300"></div>
+          <div class="min-w-0 flex-1">
+            <h2 id="drawer-title" class="text-base font-semibold text-slate-100">Configure token</h2>
+            <p id="drawer-subtitle" class="mt-0.5 text-xs text-slate-500"></p>
+          </div>
+          <button type="button" id="drawer-close" class="icon-btn" aria-label="Close configurator">
+            <i data-lucide="x" class="h-5 w-5"></i>
+          </button>
+        </div>
+
+        <div id="drawer-body" class="flex-1 overflow-y-auto p-5"></div>
+
+        <div id="drawer-footer" class="border-t border-slate-800 bg-slate-900/80 p-5"></div>
+      </div>
+    </div>
+
+    <!-- Confirm dialog -->
+    <div id="confirm" class="fixed inset-0 z-[55] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
+      <div id="confirm-backdrop" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"></div>
+      <div class="relative w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl animate-fade-in">
+        <h3 id="confirm-title" class="text-base font-semibold text-slate-100">Are you sure?</h3>
+        <p id="confirm-message" class="mt-2 text-sm text-slate-400"></p>
+        <div class="mt-5 flex justify-end gap-2">
+          <button type="button" id="confirm-cancel" class="btn-secondary">Cancel</button>
+          <button type="button" id="confirm-ok" class="btn-danger">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast region -->
+    <div
+      id="toast-container"
+      class="pointer-events-none fixed bottom-4 right-4 z-[70] flex w-full max-w-sm flex-col gap-2"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

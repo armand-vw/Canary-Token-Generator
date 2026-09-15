@@ -40,21 +40,21 @@
     Client-side decoy tokens for breach &amp; intrusion detection
   </text>
 
-  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22">
-    <rect x="96" y="352" width="200" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
-    <text x="128" y="384" fill="#67e8f9">Web bugs</text>
-    <rect x="312" y="352" width="224" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
-    <text x="344" y="384" fill="#67e8f9">Decoy PDFs</text>
-    <rect x="552" y="352" width="200" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
-    <text x="584" y="384" fill="#67e8f9">QR codes</text>
-    <rect x="768" y="352" width="296" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
-    <text x="800" y="384" fill="#67e8f9">Fake credentials</text>
-    <rect x="96" y="418" width="240" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
-    <text x="128" y="450" fill="#67e8f9">.env / config bait</text>
-    <rect x="352" y="418" width="230" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
-    <text x="384" y="450" fill="#67e8f9">100% client-side</text>
-    <rect x="598" y="418" width="200" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
-    <text x="630" y="450" fill="#67e8f9">No sign-up</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22" text-anchor="middle">
+    <rect x="96" y="352" width="168" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
+    <text x="180" y="385" fill="#67e8f9">Web bugs</text>
+    <rect x="280" y="352" width="195" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
+    <text x="377" y="385" fill="#67e8f9">Decoy PDFs</text>
+    <rect x="491" y="352" width="168" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
+    <text x="575" y="385" fill="#67e8f9">QR codes</text>
+    <rect x="675" y="352" width="282" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
+    <text x="816" y="385" fill="#67e8f9">Fake credentials</text>
+    <rect x="96" y="418" width="310" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
+    <text x="251" y="451" fill="#67e8f9">.env / config bait</text>
+    <rect x="422" y="418" width="296" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
+    <text x="570" y="451" fill="#67e8f9">100% client-side</text>
+    <rect x="734" y="418" width="195" height="50" rx="25" fill="#0e7490" opacity=".2" stroke="#155e75" />
+    <text x="831" y="451" fill="#67e8f9">No sign-up</text>
   </g>
 
   <text x="96" y="560" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24">

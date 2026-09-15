@@ -34,12 +34,12 @@
     Client-side decoy tokens for breach &amp; intrusion detection
   </text>
 
-  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">
-    <rect x="282" y="228" width="168" height="42" rx="21" fill="#0e7490" opacity=".22" stroke="#155e75" />
-    <text x="306" y="255" fill="#67e8f9">100% client-side</text>
-    <rect x="466" y="228" width="150" height="42" rx="21" fill="#0e7490" opacity=".22" stroke="#155e75" />
-    <text x="490" y="255" fill="#67e8f9">No sign-up</text>
-    <rect x="632" y="228" width="176" height="42" rx="21" fill="#0e7490" opacity=".22" stroke="#155e75" />
-    <text x="656" y="255" fill="#67e8f9">GitHub Pages</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20" text-anchor="middle">
+    <rect x="282" y="228" width="274" height="42" rx="21" fill="#0e7490" opacity=".22" stroke="#155e75" />
+    <text x="409" y="256" fill="#67e8f9">100% client-side</text>
+    <rect x="572" y="228" width="182" height="42" rx="21" fill="#0e7490" opacity=".22" stroke="#155e75" />
+    <text x="663" y="256" fill="#67e8f9">No sign-up</text>
+    <rect x="770" y="228" width="208" height="42" rx="21" fill="#0e7490" opacity=".22" stroke="#155e75" />
+    <text x="874" y="256" fill="#67e8f9">GitHub Pages</text>
   </g>
 </svg>
